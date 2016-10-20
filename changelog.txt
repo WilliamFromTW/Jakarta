@@ -1,0 +1,105 @@
+v2.0.1
+--
+use apache poi 3.15 - 2016/10/18
+fix bug "wrong row ,col paramter" in CreateExcel.createHeader - 2016/10/20
+
+v2.0
+--
+rename project to InMethodJakarta - 2015/08/20
+
+v1.0p3
+--
+1. fix bug only 4000 line excel export(using dataset object) in class "CreateExcel" - 2015/04/09
+
+v1.0p2
+--
+1. fix bug only 4000 line excel export(using dataset object) in class "CreateExcel" - 2015/04/07
+
+v1.0p1
+--
+1. fix bug only 4000 line excel export in class "CreateExcel" - 2015/04/07
+
+v1.0
+--
+1. use poi-3.9 final - 2015/03/18
+2. use gradle - 2015/03/18
+3. use Eclipse Luna developer - 2015/03/18
+4. use apache commons codec 1.10 - 2015/03/18
+5. fix bugs for calculateShiftExcel - 2015/03/18
+
+
+12/08/2010(v0.9b17)
+--
+1. fix bug in ReadExcel(wrong cell data) , boolean and blank type
+
+03/17/2010(v0.9b16)
+--
+1. fix bug in ReadExcel(wrong cell data) , numberic type
+
+03/11/2010(v0.9b15)
+--
+1. fix bug in ReadExcel(get total row number)
+
+09/09/2009(v0.9b14)
+--
+1. add class ReadExcel
+
+05/19/2009(v0.9b13)
+--
+1. Fix Bug Integer format
+2. add new CDouble(Customize format Double)
+
+05/15/2009(v0.9b12)
+--
+1. add Integer object
+
+07/24/2008(v0.9b11)
+--
+1. bug fix
+
+1. new method createPic , put  picture in excel
+06/30/2008(v0.9b9)
+--
+1. new method createPic , put  picture in excel
+
+06/30/2008(v0.9b9)
+--
+1. new method createPic , put  picture in excel
+
+05/28/2008(v0.9b8)
+--
+1. new method calcuateCsv , is designed for resolve 32767 rows can't export excel problem
+
+05/26/2008(v0.9b7)
+--
+1. add new parameter to check if print the same data (CreateExcel)
+
+11/23/2006(v0.9b5)
+--
+1. cancle method "changeToNextSheet"
+2. add new method
+   CreatExcel(OutputStream , InputStream) to read exist excel
+   setCurrentSheet
+
+
+12/17/2004(v0.9b4)
+--
+1. add method in CreateExcel
+   changeToNextSheet
+   getNextRow
+
+12/16/2004(v0.9b3) not released!
+--
+1. add method in CreateExcel
+   createHeader
+   getCurrentWorkBook
+   getCurrentSheet
+   setPrintResultSetHeader
+
+12/07/2004(v0.9b2) not released!
+--
+1. add FromtwExcel
+
+11/11/2004(v0.9b1)
+--
+1. first version
