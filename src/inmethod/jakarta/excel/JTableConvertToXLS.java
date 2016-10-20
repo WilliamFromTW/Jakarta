@@ -1,6 +1,6 @@
 package inmethod.jakarta.excel;
 
-import inmethod.jakarta.excel.CreateExcel;
+import inmethod.jakarta.excel.CreateXLS;
 import inmethod.commons.rdb.DataSet;
 import java.util.Vector;
 import javax.swing.table.TableModel;
@@ -9,16 +9,16 @@ import java.text.*;
 
 /**
  * 將JTable的資料轉成excel
- * @see inmethod.jakarta.excel.CreateExcel
+ * @see inmethod.jakarta.excel.CreateXLS
  */
 
-public class JTableConvertToExcel{
-  private static JTableConvertToExcel converter = null;
-  private JTableConvertToExcel(){}
+public class JTableConvertToXLS{
+  private static JTableConvertToXLS converter = null;
+  private JTableConvertToXLS(){}
 
-  public static JTableConvertToExcel getInstance(){
+  public static JTableConvertToXLS getInstance(){
     if( converter==null )
-      converter = new JTableConvertToExcel();
+      converter = new JTableConvertToXLS();
     return converter;
   }
 
@@ -26,13 +26,13 @@ public class JTableConvertToExcel{
     NumberFormat a = new DecimalFormat("#0.0");
     FileOutputStream out = null;
     Object aO = null;
-    CreateExcel aFE;
+    CreateXLS aFE;
     DataSet aDS = null;
     Vector aCellData = null;
     try {
       aDS = new DataSet();
       out = new FileOutputStream(file);
-      aFE =  new CreateExcel(out);
+      aFE =  new CreateXLS(out);
       aCellData = new Vector();
       for(int i=0; i < ResultTable1.getColumnCount(); i++) {
         aCellData.add(ResultTable1.getColumnName(i));

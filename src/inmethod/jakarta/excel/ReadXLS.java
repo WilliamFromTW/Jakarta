@@ -5,7 +5,7 @@ import java.util.*;
 import inmethod.commons.rdb.DataSet;
 import java.text.*;
 
-public class ReadExcel{
+public class ReadXLS{
 
   private InputStream aInput;
   private HSSFWorkbook workBook;
@@ -13,12 +13,12 @@ public class ReadExcel{
   private HSSFRow aRow;
   private Vector aSheetNames;
 
-  public ReadExcel(InputStream aIS){
+  public ReadXLS(InputStream aIS){
     aInput = aIS;
     init(); 
   }
 
-  private ReadExcel(){}//no excel, no object
+  private ReadXLS(){}//no excel, no object
 
   private void init(){
     try{
@@ -122,11 +122,11 @@ public class ReadExcel{
   }
 
   public static void main(String[] a){
-    ReadExcel aRE = null;
+    ReadXLS aRE = null;
     Vector aExcelReturn = null;
     try{
 //      aRE = new ReadExcel(new FileInputStream("/tmp/TC_PM_FILE.xls"));
-      aRE = new ReadExcel(new FileInputStream("c:\\temp\\data.xls"));
+      aRE = new ReadXLS(new FileInputStream("c:\\temp\\data.xls"));
 
       //sample 1
       aExcelReturn = aRE.getAllExcelData();

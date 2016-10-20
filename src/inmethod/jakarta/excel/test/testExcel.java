@@ -33,7 +33,7 @@ public class testExcel {
     Statement aSt;
     ResultSet aRS;
     String sSqlCmd;
-    CreateExcel aFE;
+    CreateXLS aFE;
     String sReturn = "";
     FileOutputStream aFO = null;
     FileInputStream aFI = null;
@@ -44,7 +44,7 @@ public class testExcel {
     try{
       aFI = new FileInputStream(System.getProperty("file.separator")+"tmp" +System.getProperty("file.separator")+"testShiftExcel.xls");
       aFO = new FileOutputStream(System.getProperty("file.separator")+"tmp" +System.getProperty("file.separator")+"testShiftExcel-"+Calendar.getInstance().get(Calendar.YEAR)+"-"+(Calendar.getInstance().get(Calendar.MONTH)+1)+".xls");
-      aFE = new CreateExcel(aFO,aFI);
+      aFE = new CreateXLS(aFO,aFI);
       aFE.setCurrentSheet("Stock");      //取得Excel sheet名稱
       aFE.createHeader("test Shift Excel",(short)0,(short)1,(short)0,(short)8);
 

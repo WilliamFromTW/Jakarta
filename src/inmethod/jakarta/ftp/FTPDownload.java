@@ -1,4 +1,4 @@
-package inmethod.jakarta.excel;
+package inmethod.jakarta.ftp;
 import org.apache.commons.net.ftp.*;
 import java.io.*;
 

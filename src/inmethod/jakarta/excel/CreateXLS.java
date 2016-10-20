@@ -12,7 +12,6 @@ import org.apache.poi.hssf.usermodel.*;
 import java.io.*;
 import java.util.*;
 import inmethod.commons.util.*;
-import inmethod.jakarta.text.DelimiterTokenizer;
 import inmethod.commons.rdb.DataSet;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -20,7 +19,7 @@ import inmethod.commons.rdb.*;
 
 
 
-public class CreateExcel{
+public class CreateXLS{
 
   private HSSFWorkbook workBook;
   private HSSFSheet sheet;
@@ -36,13 +35,13 @@ public class CreateExcel{
   private String sCurrencyFormat = "#,##0.0";
   private String sIntCurrencyFormat = "#,##0";
   private String sSpaceInsteadOf = "";
-  private CreateExcel(){}
+  private CreateXLS(){}
 
-  public CreateExcel(OutputStream aOS){
+  public CreateXLS(OutputStream aOS){
     aOutput = aOS;
     init();
   }
-  public CreateExcel(OutputStream aOS,InputStream aIS){
+  public CreateXLS(OutputStream aOS,InputStream aIS){
     aOutput = aOS;
     aInput = aIS;
     init();
@@ -327,12 +326,7 @@ public class CreateExcel{
     aCell = aRow.getCell(y);
     if( aCell == null )
       aCell = aRow.createCell(y);
-    if( aVector.get(0) instanceof RString){
-       HSSFCellStyle cs = getCurrentWorkBook().createCellStyle();
-       cs.setAlignment( HorizontalAlignment.RIGHT);
-       aCell.setCellValue( new HSSFRichTextString( ((RString)aVector.get(0)).toString() ) );
-    }
-    else{
+ 
        HSSFCellStyle cs = getCurrentWorkBook().createCellStyle();
        cs.setWrapText( true );
        aRow.setHeight( (short) 0x349 );
@@ -340,31 +334,9 @@ public class CreateExcel{
        aCell.setCellValue( new HSSFRichTextString( (String)aVector.get(0) ) );
        aCell.setCellStyle( cs );
        getCurrentSheet().setColumnWidth( (short) 2, (short) ( 100) );
-    }
 
   }
 
- /**
-  * write value to specify row and column
-  * @param x
-  * @param y
-  * @param sValue
-  */
-  public void setValue(short x, short y, RString sValue){
-    HSSFRow aRow = sheet.getRow(x);
-    HSSFCell aCell = null;
-    if( sheet.getRow(x) == null)
-      aRow = sheet.createRow(x);
-    aCell = aRow.getCell(y);
-    if( aCell == null )
-      aCell = aRow.createCell(y);
-    HSSFCellStyle cs = getCurrentWorkBook().createCellStyle();
-    cs.setAlignment( HorizontalAlignment.RIGHT);
-    aCell.setCellStyle(cs);
-    //aCell.setEncoding(HSSFCell.ENCODING_UTF_16);
-    aCell.setCellValue( new HSSFRichTextString(sValue.toString() ) );
-
-  }
 
   /**
    * write value to specify row and column
@@ -385,8 +357,6 @@ public class CreateExcel{
     aCell = aRow.getCell(y);
     if( aCell == null )
       aCell = aRow.createCell(y);
-    //aCell.setEncoding(HSSFCell.ENCODING_UTF_16 );
-//    aCell.setCellValue( new HSSFRichTextString(sValue) );
        HSSFCellStyle cs = getCurrentWorkBook().createCellStyle();
        cs.setWrapText( true );
        aRow.setHeight( (short) 0x349 );
@@ -394,34 +364,10 @@ public class CreateExcel{
        aCell.setCellValue( new HSSFRichTextString( sValue ) );
        aCell.setCellStyle( cs );
 
-       getCurrentSheet().setColumnWidth( (short) aCell.getColumnIndex(), (short) ( ( getStringMaxLengthExcludeLineFeed(sValue)) *256*4 )  );
-
+       getCurrentSheet().setColumnWidth( (short) aCell.getColumnIndex(), (short) ( ( sValue.trim().length() ) *256*4 )  );
+ 
   }
   
-  /**
-   * auto size column
-   * @param a
-   * @return
-   */
-  public short getStringMaxLengthExcludeLineFeed(String a){
-    DelimiterTokenizer aD = new DelimiterTokenizer("\n");
-    aD.reset(a);
-    int iMax=0;
-    int i=0;
-    try{
-      System.out.println("full str="+a.length());
-      while(aD.hasMoreTokens()){
-        i =  aD.nextToken().getBytes().length;
-        if( i>iMax ) iMax=i;
-      }
-      System.out.println("token="+iMax);
-      if( iMax==0 ) return (short)a.getBytes().length;
-      return (short)iMax;
-    }catch(Exception ex){
-      ex.printStackTrace();
-      return 0;
-    }
-  }
   
   /**
    * write value to specify row and column
@@ -486,34 +432,15 @@ public class CreateExcel{
 
   }
 
-  /**
-   * write value to specify row and column
-   * @param x
-   * @param y
-   * @param dValue
-   */
-  public void setValue(short x, short y, CDouble dValue){
-    HSSFRow aRow = sheet.getRow(x);
-    HSSFCell aCell = null;
-    if( sheet.getRow(x) == null)
-      aRow = sheet.createRow(x);
-    aCell = aRow.getCell(y);
-    if( aCell == null )
-      aCell = aRow.createCell(y);
-    HSSFDataFormat df = getCurrentWorkBook().createDataFormat();
-    HSSFCellStyle cs = getCurrentWorkBook().createCellStyle();
-    cs.setDataFormat(df.getFormat(dValue.getCurrencyFormat()));
-    aCell.setCellStyle(cs);
-    aCell.setCellValue( dValue.doubleValue() );
 
-  }
+
 
   /**
    * give a currency format , print number to some where
    * @param x  x location
    * @param y  y location
    * @param dValue Double class
-   * @param sFormat currency format
+   * @param sFormat currency format "#,##0.0";
    */
   public void setValue(short x, short y, Double dValue,String sFormat){
     HSSFRow aRow = sheet.getRow(x);
@@ -627,20 +554,11 @@ public class CreateExcel{
             aTempCell.setCellValue( ((Double)obj).doubleValue() );
           }
 
-          if( obj instanceof CDouble ){
-            aTempCell.setCellStyle(CurrencyCS);
-            aTempCell.setCellValue( ((CDouble)obj).doubleValue() );
-          }
-
           if( obj instanceof Integer ){
             aTempCell.setCellStyle(CurrencyCS);
             aTempCell.setCellValue( ((Integer)obj).intValue() );
           }
 
-          if( obj instanceof RString){
-             aTempCell.setCellStyle(CurrencyCS);
-             aTempCell.setCellValue( new HSSFRichTextString( obj.toString() ) );
-          }
 
           if( obj instanceof String ){
             aTempCell.setCellValue( new HSSFRichTextString((String)obj) );
@@ -1034,10 +952,6 @@ private  int loadPicture( InputStream aIS, HSSFWorkbook wb ) throws IOException
             aTempCell.setCellValue( ((Integer)obj).intValue() );
           }
 
-          if( obj instanceof RString){
-             aTempCell.setCellStyle(CurrencyCS);
-             aTempCell.setCellValue( new HSSFRichTextString( obj.toString() ) );
-          }
           if( obj instanceof String ){
             //aTempCell.setEncoding(HSSFCell.ENCODING_UTF_16 );
             aTempCell.setCellValue( new HSSFRichTextString((String)obj) );

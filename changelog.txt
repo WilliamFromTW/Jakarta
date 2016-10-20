@@ -1,8 +1,9 @@
-v2.0.1
+v3.0(not released)
 --
 use apache poi 3.15 - 2016/10/18
-fix bug "wrong row ,col paramter" in CreateExcel.createHeader - 2016/10/20
-
+fix bug "wrong row ,col parameter" in CreateExcel.createHeader - 2016/10/20
+rename all name "Excel" to "XLS" - 2016/10/20
+ 
 v2.0
 --
 rename project to InMethodJakarta - 2015/08/20
