@@ -2,7 +2,8 @@ v3.0(not released)
 --
 use apache poi 3.15 - 2016/10/18
 fix bug "wrong row ,col parameter" in CreateExcel.createHeader - 2016/10/20
-rename all name "Excel" to "XLS" - 2016/10/20
+rename "Excel" to "XLS" - 2016/10/20
+add ddclient (google domains dynamic client) - 2016/11/07
  
 v2.0
 --
