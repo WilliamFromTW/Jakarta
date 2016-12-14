@@ -19,7 +19,7 @@ import inmethod.commons.rdb.*;
 
 
 
-public class CreateXLS{
+public class CreateXLS implements ICreateExcel {
 
   private HSSFWorkbook workBook;
   private HSSFSheet sheet;

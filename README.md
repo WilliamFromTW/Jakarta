@@ -2,11 +2,21 @@
 
 1. j2se version 8 or above    
 
-2. InMethod Tools 2.0 or above    
+2. InMethod Tools 2.01 or above    
 
-3. jakarta poi 3.9 final    
-
-4. apache commons net 1.2.2    
+3. jakarta poi
+   poi-ooxml-3.15.jar
+   poi-ooxml-schemas-3.15.jar
+   poi-3.15.jar
+   
+4. apache
+   commons-net-1.2.2.jar
+   commons-collections4-4.1.jar
+   commons-codec-1.10.jar
+   xmlbeans-2.6.0.jar
+   curvesapi-1.04.jar
+   xmlbeans-2.6.0.jar
+     
 
 5. gradle 2.7 or above    
    gradle jar => generate jar file    

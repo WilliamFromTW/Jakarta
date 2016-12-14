@@ -5,7 +5,7 @@ import java.util.*;
 import inmethod.commons.rdb.DataSet;
 import java.text.*;
 
-public class ReadXLS{
+public class ReadXLS implements IReadExcel{
 
   private InputStream aInput;
   private HSSFWorkbook workBook;
@@ -18,7 +18,7 @@ public class ReadXLS{
     init(); 
   }
 
-  private ReadXLS(){}//no excel, no object
+  private ReadXLS(){}
 
   private void init(){
     try{
@@ -70,9 +70,6 @@ public class ReadXLS{
     return workBook.getSheet( sSheetName ).getLastRowNum();
   }
 
-  /**
-   *  @return Include com.fromtw.commons.rdb.DataSet ,the first data of DataSet is sheet name, second data  is  excel cell(Vector) stored in DataSet
-   */
   public Vector getAllExcelData() throws Exception{
     Vector aReturn = new Vector();
     DataSet aDataSet;
@@ -91,6 +88,7 @@ public class ReadXLS{
       System.out.println("Last Row Number = " + sheet.getLastRowNum());
       for(int j=0;j<iNumOfRow;j++){
         aRow = sheet.getRow(j);
+        if(aRow==null) aRow = sheet.createRow(j);
         aDataCell = new Vector();
         shortNumOfCell = aRow.getLastCellNum();
         System.out.println("Last Cell Number = " + shortNumOfCell);

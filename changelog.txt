@@ -1,9 +1,11 @@
 v3.0(not released)
 --
-use apache poi 3.15 - 2016/10/18
-fix bug "wrong row ,col parameter" in CreateExcel.createHeader - 2016/10/20
-rename "Excel" to "XLS" - 2016/10/20
-add ddclient (google domains dynamic client) - 2016/11/07
+1. use apache poi 3.15 - 2016/10/18
+2. fix bug "wrong row ,col parameter" in CreateXLS.createHeader - 2016/10/20
+3. add ddclient (google domains dynamic client) - 2016/11/07
+4. new class CreateXLSX that can create xlsx excel file - 2016/11/16
+5. new class ReadXLSX that can read xlsx excel file - 2016/11/17
+6. add ddclientProxyServlet , refactoring ddclient - 2016/12/14
  
 v2.0
 --
