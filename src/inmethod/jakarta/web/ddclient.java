@@ -10,7 +10,7 @@ public class ddclient {
   public static void main(String arg[]) {
 	  System.out.println("ddclient googledomains [usrename] [password] [hostname]");
 	  System.out.println("ddclient googledomains [usrename] [password] [hostname] [myip]");
-	  System.out.println("ddclient ddclientProxyServlet [PROXY URL] [usrename] [password] [hostname] [myip]");
+	  System.out.println("ddclient ddclientProxyServlet [PROXY URL] [usrename] [password] [hostname]");
 	  System.out.println("ddclient ddclientProxyServlet [PROXY URL] [usrename] [password] [hostname] [myip]");
 	  if( arg.length!=4 && arg.length!=5  && arg.length!=6){
 		  System.out.println("arg error");

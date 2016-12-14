@@ -40,17 +40,27 @@ import javax.servlet.http.HttpServletResponse;
 			response.setContentType("text/html; charset=UTF-8");
 			FUNCTION_NAME = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
 			PrintWriter out = response.getWriter();
+			String sMsg = "";
 			String arg[] = new String [5];
 			arg[0] = "googledomains";
 			arg[1] = request.getParameter("username");
 			arg[2] = request.getParameter("password");
 			arg[3] = request.getParameter("hostname");
-			if( request.getParameter("myip")!=null )
+			sMsg = "host="+arg[3];
+			if( request.getParameter("myip")!=null && !request.getParameter("myip").trim().equals("") ){
 			  arg[4] = request.getParameter("myip");
-			else
-			  arg[4] = "";
+			  sMsg = sMsg +",myip="+arg[4];	
+			}  
+			else{
+			  String ipAddress = request.getHeader("X-FORWARDED-FOR");
+			  if (ipAddress == null) {
+				ipAddress = request.getRemoteAddr();
+			  }
+			  arg[4] = ipAddress;
+			  sMsg = sMsg +",myip="+arg[4];	
+			}  
 			ddclient.main(arg);
-			out.println("{\"STATUS\":\"TRUE\",\"MSG\":\"pass to ddclient\"}");
+			out.println("{\"STATUS\":\"TRUE\",\"MSG\":\""+sMsg+",pass to ddclient\"}");
 			out.flush();
 			out.close();
 	  }
