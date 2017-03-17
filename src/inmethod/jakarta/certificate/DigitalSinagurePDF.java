@@ -1,9 +1,6 @@
 package inmethod.jakarta.certificate;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
@@ -15,8 +12,11 @@ import java.util.Calendar;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
+import com.itextpdf.text.Font;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
+import com.itextpdf.text.pdf.PdfSignatureAppearance.RenderingMode;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.security.BouncyCastleDigest;
 import com.itextpdf.text.pdf.security.DigestAlgorithms;
@@ -60,9 +60,11 @@ public class DigitalSinagurePDF {
 				appearance.setSignDate(aC);
 			else
 				appearance.setSignDate(Calendar.getInstance());
-
+			
 			if( sSignatureField!=null)
 			  appearance.setVisibleSignature(sSignatureField);
+			
+			
 			
 			Security.addProvider(new BouncyCastleProvider());
 
@@ -71,13 +73,25 @@ public class DigitalSinagurePDF {
 			KeyStore ks = KeyStore.getInstance("pkcs12");
 			ks.load(certFile, password.toCharArray());
 			String alias = ks.aliases().nextElement();
-
 			PrivateKey pk = (PrivateKey) ks.getKey(alias, password.toCharArray());
 			
 			X509Certificate cert = (X509Certificate) ks.getCertificate(alias);
-
+			
+			String dn = cert.getSubjectDN().getName();
+			String CN = getValByAttributeTypeFromDN(dn,"CN=");
+			//System.out.println(CN);
+			
+			//設定中文字型(BaseFont、字型大小、字型型態)
+			BaseFont bfChinese = BaseFont.createFont("STSongStd-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED); 
+			
+            Font FontChinese14 = new Font(bfChinese, 8 ,0);            
+            
+			appearance.setLayer2Font(FontChinese14);
+		//	appearance.setLayer2Text(getValByAttributeTypeFromDN(dn,"EMAILADDRESS=")+"\n"+getValByAttributeTypeFromDN(dn,"CN="));
+			appearance.setRenderingMode(RenderingMode.DESCRIPTION );
 			ExternalDigest digest = new BouncyCastleDigest();
 			ExternalSignature signature = new PrivateKeySignature(pk, DigestAlgorithms.SHA512, "BC");
+			
 			MakeSignature.signDetached(appearance, digest, signature, new Certificate[] { cert }, null, null, null, 0,
 					CryptoStandard.CMS);
 		} catch (Exception ee) {
@@ -85,4 +99,29 @@ public class DigitalSinagurePDF {
 		}
 		return false;
 	}
+	
+
+	/**
+	 * attribute include EMAILADDRESS= , CN= , OU= , DC=
+	 * @param dn
+	 * @param attributeType
+	 * @return
+	 */
+	private String getValByAttributeTypeFromDN(String dn, String attributeType)
+	{
+		System.out.println(dn);
+		String[] dnSplits = dn.split(","); 
+	    for (String dnSplit : dnSplits) 
+	    {
+	        if (dnSplit.contains(attributeType)) 
+	        {
+	            String[] cnSplits = dnSplit.trim().split("=");
+	            if(cnSplits[1]!= null)
+	            {
+	                return cnSplits[1].trim();
+	            }
+	        }
+	    }
+	    return "";
+	}	
 }
