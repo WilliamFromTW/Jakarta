@@ -13,11 +13,15 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-4.6.0.201612231935-r.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.22.jar"/>
 	<classpathentry kind="lib" path="lib/jsch-0.1.54.jar"/>
-	<classpathentry kind="lib" path="lib/bcpkix-jdk15on-156.jar"/>
-	<classpathentry kind="lib" path="lib/itextpdf-5.5.9.jar"/>
-	<classpathentry kind="lib" path="lib/bcprov-jdk15on-156.jar"/>
 	<classpathentry kind="lib" path="lib/commons-net-3.5.jar"/>
 	<classpathentry kind="lib" path="lib/InMethodTools-2.02.jar"/>
-	<classpathentry kind="lib" path="lib/itext-asian.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-font-asian-7.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-forms-7.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-io-7.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-kernel-7.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-layout-7.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-sign-7.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/bcprov-jdk15on-156.jar"/>
+	<classpathentry kind="lib" path="lib/bcpkix-jdk15on-156.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

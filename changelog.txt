@@ -1,4 +1,4 @@
-v3.0(not released)
+v3.0 - 2017/7/06 
 --
 1. use apache poi 3.15 - 2016/10/18
 2. fix bug "wrong row ,col parameter" in CreateXLS.createHeader - 2016/10/20

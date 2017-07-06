@@ -25,6 +25,7 @@
 ### lib for digital sinature pdf utility
    bcprov-jdk15on-156.jar  
    bcpkix-jdk15on-156.jar      
-   itextpdf-5.5.9.jar    
+   itext7-*.jar
+   
        
         
