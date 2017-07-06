@@ -1,4 +1,4 @@
-package inmethod.jakarta.certificate;
+package inmethod.jakarta.pdf.certificate;
 
 import com.itextpdf.io.font.FontConstants;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -62,10 +62,32 @@ public class DigitalSignaturePDF {
 		if (aDigitalSinagurePDF == null) {
 			aDigitalSinagurePDF = new DigitalSignaturePDF();
 		}
-		return new DigitalSignaturePDF();
+		return aDigitalSinagurePDF;
 
 	}
-
+	
+	public boolean signDetached(String src, String dest, String certFile, String sSignatureField,
+			String password, String sReason, String sLocation, Calendar aC) {
+		try{
+			return signDetached( new File(src),dest,	new File(certFile),sSignatureField,password,sReason,sLocation,aC);
+			} catch (Exception ee) {
+				ee.printStackTrace();
+				return false;
+			}
+	
+	}
+	
+	public boolean signDetached(File src, String dest, File certFile, String sSignatureField,
+			String password, String sReason, String sLocation, Calendar aC) {
+		try{
+		return signDetached( new FileInputStream(src),new FileOutputStream(dest),	new FileInputStream(certFile),sSignatureField,password,sReason,sLocation,aC);
+		} catch (Exception ee) {
+			ee.printStackTrace();
+			return false;
+		}
+	}
+	
+	
 	public boolean signDetached(InputStream src, OutputStream dest, InputStream certFile, String sSignatureField,
 			String password, String sReason, String sLocation, Calendar aC) {
 		try {
@@ -101,7 +123,7 @@ public class DigitalSignaturePDF {
 			// sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 			appearance.setLayer2Text(sdf.format(aCalendar.getTime()) + "+08'00'");
 			appearance.setLayer2Font(PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H", false));
-			System.out.println(CN);
+			//System.out.println(CN);
 			// System.out.println(PdfFontFactory.createFont("STSong-Light",
 			// "UniGB-UCS2-H", false).getWidth("HH:mm:ss+08'00'",(float)
 			// 11.8)*1.75);
@@ -116,13 +138,13 @@ public class DigitalSignaturePDF {
 			float x = n0.getBBox().toRectangle().getLeft();
 			float y = n0.getBBox().toRectangle().getBottom();
 			float width = n0.getBBox().toRectangle().getWidth();
-			System.out.println("asdf" + width);
+			//System.out.println("asdf" + width);
 			float height = n0.getBBox().toRectangle().getHeight();
 			PdfCanvas canvas = new PdfCanvas(n0, signer.getDocument());
 			canvas.setFillColor(Color.LIGHT_GRAY);
 			canvas.rectangle(x, y, width, height);
 			canvas.fill();
-			System.out.println("font size=" + (float) ((float) width / 12.6));
+			//System.out.println("font size=" + (float) ((float) width / 12.6));
 			appearance.setLayer2FontSize((float) ((float) width / 12.6));
 
 			/*
@@ -149,7 +171,7 @@ public class DigitalSignaturePDF {
 	 * @return
 	 */
 	private String getValByAttributeTypeFromDN(String dn, String attributeType) {
-		System.out.println(dn);
+		//System.out.println(dn);
 		String[] dnSplits = dn.split(",");
 		for (String dnSplit : dnSplits) {
 			if (dnSplit.contains(attributeType)) {

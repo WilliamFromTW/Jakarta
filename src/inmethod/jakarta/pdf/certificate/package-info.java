@@ -5,4 +5,4 @@
  * @author william
  *
  */
-package inmethod.jakarta.certificate.test;
+package inmethod.jakarta.pdf.certificate;

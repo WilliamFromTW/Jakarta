@@ -1,15 +1,17 @@
-v3.0 - 2017/7/06 
+v3.0 - 2017-7-06 
 --
-1. use apache poi 3.15 - 2016/10/18
-2. fix bug "wrong row ,col parameter" in CreateXLS.createHeader - 2016/10/20
-3. add ddclient (google domains dynamic client) - 2016/11/07
-4. new class CreateXLSX that can create xlsx excel file - 2016/11/16
-5. new class ReadXLSX that can read xlsx excel file - 2016/11/17
-6. add ddclientProxyServlet , refactoring ddclient - 2016/12/14
-7. add version control utility - 2017/01/06
-   package inmethod.jakrata.vcs
-8. add pdf digital sign (package inmethod.jakarta.certificate) - 2017/03/09   
- 
+1.  use apache poi 3.15 - 2016/10/18
+2.  fix bug "wrong row ,col parameter" in CreateXLS.createHeader - 2016-10-20
+3.  add ddclient (google domains dynamic client) - 2016-11-07
+4.  new class CreateXLSX that can create xlsx excel file - 2016-11-16
+5.  new class ReadXLSX that can read xlsx excel file - 2016-11-17
+6.  add ddclientProxyServlet , refactoring ddclient - 2016-12-14
+7.  add version control utility - 2017-01-06
+    package inmethod.jakrata.vcs
+8.  add pdf digital sign (package inmethod.jakarta.pdf.certificate) - 2017-03-09   
+9.  fix bug wrong instance in DigitalSignaturePDF getInstance - 2017-07-06 
+    add new class PdfUtility for read pdf specify data (field value)
+
 v2.0
 --
 rename project to InMethodJakarta - 2015/08/20
