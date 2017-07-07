@@ -1,4 +1,4 @@
-v3.0 - 2017-7-06 
+v3.0 - 2017-7-07 
 --
 1.  use apache poi 3.15 - 2016/10/18
 2.  fix bug "wrong row ,col parameter" in CreateXLS.createHeader - 2016-10-20
@@ -11,6 +11,7 @@ v3.0 - 2017-7-06
 8.  add pdf digital sign (package inmethod.jakarta.pdf.certificate) - 2017-03-09   
 9.  fix bug wrong instance in DigitalSignaturePDF getInstance - 2017-07-06 
     add new class PdfUtility for read pdf specify data (field value)
+10. re-factoring PdfUtility - 2017-07-07
 
 v2.0
 --

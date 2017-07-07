@@ -2,6 +2,7 @@ package inmethod.jakarta.pdf;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -12,37 +13,56 @@ import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.forms.fields.PdfFormField;
 
 public class PdfUtility {
-	
-	private static PdfUtility aPdfReader;
 
-	private PdfUtility() {
-	}
+	private PdfDocument pdfDoc = null;
+	private PdfAcroForm form = null;
+	private Map<String, PdfFormField> fields = null;
+	private InputStream aIS = null;
 
-	public static PdfUtility getInstance() {
+	public PdfUtility(InputStream src) {
+		try {
+			aIS = src;
+			pdfDoc = new PdfDocument(new PdfReader(aIS));
+			form = PdfAcroForm.getAcroForm(pdfDoc, true);
 
-		if (aPdfReader == null) {
-			aPdfReader = new PdfUtility();
+			fields = form.getFormFields();
+		} catch (Exception ee) {
+			ee.printStackTrace();
 		}
-		return  aPdfReader;
+	}
 
+	public PdfUtility(File src) {
+		try {
+			aIS = new FileInputStream(src);
+			pdfDoc = new PdfDocument(new PdfReader(aIS));
+			form = PdfAcroForm.getAcroForm(pdfDoc, true);
+
+			fields = form.getFormFields();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
-	public String getFieldValue(String src,String sField) throws IOException{
-		return getFieldValue(new File(src),sField);
+
+	public PdfUtility(String src) {
+		try {
+			aIS = new FileInputStream(new File(src));
+			pdfDoc = new PdfDocument(new PdfReader(aIS));
+			form = PdfAcroForm.getAcroForm(pdfDoc, true);
+			fields = form.getFormFields();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
-	public String getFieldValue(File src,String sField) throws IOException{
-		return getFieldValue(new FileInputStream(src),sField);
-	}	
-	
-	public String getFieldValue(InputStream src,String sField) throws IOException{
-        String sReturn = "";
-	    PdfDocument pdfDoc = new PdfDocument(new PdfReader(src));
-        PdfAcroForm form = PdfAcroForm.getAcroForm(pdfDoc, true);
- 
-        Map<String, PdfFormField> fields = form.getFormFields();
-        sReturn = form.getField(sField).getValueAsString();
-        pdfDoc.close();
-        return sReturn;
+
+	public String getFieldValue(String sField) {
+		String sReturn = "";
+		try {
+			sReturn = form.getField(sField).getValueAsString();
+		} catch (Exception ee) {
+			ee.printStackTrace();
+		}
+		return sReturn;
 	}
 }

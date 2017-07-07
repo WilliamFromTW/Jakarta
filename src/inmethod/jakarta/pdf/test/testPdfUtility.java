@@ -8,17 +8,19 @@ import inmethod.jakarta.pdf.PdfUtility;
 
 public class testPdfUtility {
 	public static void main(String ar[]) {
-		iText();
+		readFieldValues();
 	}
 
-	public static void iText() {
+	public static void readFieldValues() {
 		String sSrc = "/media/veracrypt2/william.fromtw@gmail.com/Dropbox/git/src/inmethod/Java/InMethodJakarta/test_files/certificate/QP0502.pdf";
 		try {
 			
 			InputStream aIS = new FileInputStream(new File(sSrc));
 			
-			
-			System.out.println(PdfUtility.getInstance().getFieldValue(aIS,"RELEASED_DATE"));
+			PdfUtility aPdfUtility = new PdfUtility(sSrc);
+			System.out.println(aPdfUtility.getFieldValue("NAME"));
+		    System.out.println(aPdfUtility.getFieldValue("VERSION"));
+			System.out.println(aPdfUtility.getFieldValue("RELEASED_DATE"));
 			
 			aIS.close();
 
