@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="lib/curvesapi-1.04.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections4-4.1.jar"/>
 	<classpathentry kind="lib" path="lib/poi-ooxml-schemas-3.15.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v8.0"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-4.6.0.201612231935-r.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.22.jar"/>
 	<classpathentry kind="lib" path="lib/jsch-0.1.54.jar"/>
@@ -17,11 +16,12 @@
 	<classpathentry kind="lib" path="lib/InMethodTools-2.02.jar"/>
 	<classpathentry kind="lib" path="lib/bcprov-jdk15on-156.jar"/>
 	<classpathentry kind="lib" path="lib/bcpkix-jdk15on-156.jar"/>
-	<classpathentry kind="lib" path="lib/itext7-font-asian-7.0.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/itext7-forms-7.0.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/itext7-io-7.0.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/itext7-kernel-7.0.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/itext7-layout-7.0.4-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/itext7-sign-7.0.4-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-font-asian-7.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-forms-7.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-io-7.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-kernel-7.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-layout-7.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/itext7-sign-7.0.4.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v8.5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

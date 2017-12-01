@@ -26,6 +26,7 @@
    bcprov-jdk15on-156.jar  
    bcpkix-jdk15on-156.jar      
    itext7-*.jar
+   slf4j-api-1.7.22.jar 
    
        
         

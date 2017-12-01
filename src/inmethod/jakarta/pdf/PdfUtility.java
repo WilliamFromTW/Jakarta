@@ -19,6 +19,10 @@ public class PdfUtility {
 	private Map<String, PdfFormField> fields = null;
 	private InputStream aIS = null;
 
+	private PdfUtility() {
+	  // 不給用	
+	}
+	
 	public PdfUtility(InputStream src) {
 		try {
 			aIS = src;
