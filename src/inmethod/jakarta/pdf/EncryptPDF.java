@@ -43,72 +43,77 @@ public class EncryptPDF {
 	 * "user password" for open pdf files.
 	 * "owner password" is for unlock encryption. 
 	 */
-	public static void main(String[] args) throws Exception{
-		if( args.length!=2 || args.length!=4) throw new Exception("arg number is wrong\n ex:\nEncryptPDF source dest user_pass owner_pass\n");
+	public static void main(String[] args) {
+		
+		System.out.println("args length=" +args.length);
+		
+		if( args.length!=2 && args.length!=4) {
+			System.out.println("arg number is wrong\nExample:\nEncryptPDF source dest user_pass owner_pass\n");
+		}	
 		
  	    EncryptPDF aConvert = EncryptPDF.getInstance();
  	    if( args.length==2)
 		  aConvert.encryptFile(args[0], args[1],null,null);
- 	    else if(args.length==4)
-		  aConvert.encryptFile(args[0], args[1],args[2],args[3]);
+ 	    else if(args.length==4) {
+ 	    	System.out.println(args[2].toString());
+ 	      if( args[2].equalsIgnoreCase("null") )
+		    aConvert.encryptFile(args[0], args[1],null,args[3].getBytes());
+ 	      else
+		    aConvert.encryptFile(args[0], args[1],args[2].getBytes(),args[3].getBytes());
+ 	    }  
  	    	
 		
 	}
 
 
-	/**
-	 * copy dir to dir , some specify file will encode
-	 * 
-	 * @param aSourceDir
-	 *            source directory
-	 * @param aDestDir
-	 * @param sUserPass user password , can be null
-	 * @param sOwnPass  owner password , can be null
-	 *
-	 */
-	public void encryptFile(File aSourceDir, File aDestDir,String sUserPass,String sOwnPass) throws Exception {
-		String sSourceDir = aSourceDir.getAbsolutePath();
-		String sDestDir = aDestDir.getAbsolutePath();
-		File aFiles[] = null;
-		if (aSourceDir.isDirectory()) {
-			aFiles = aSourceDir.listFiles();
-			for (int i = 0; i < aFiles.length; i++) {
-				if (aFiles[i].isDirectory())
-					encryptFile(aFiles[i], new File(sDestDir + getNearestDir(aFiles[i].getPath())),sUserPass,sOwnPass);
-				else if (aFiles[i].isFile()) {
-					encrypSingleFile(aFiles[i], new File(sDestDir),sUserPass,sOwnPass);
-				} else
-					throw new Exception("Dir Copy Fail: file type error");
-			}
-		} else
-			return;
-	}
 
 	/**
 	 * copy dir to dir , some specify file will encode
 	 * 
 	 * @param sSourceDir source directory
 	 * @param sDestDir  source directory
-	 * @param sUserPass user password , can be null
+	 * @param byteUserPass user password , can be null
 	 * @param sOwnPass  owner password , can be null
 	 *
 	 */
-	public void encryptFile(String sSourceDir, String sDestDir,String sUserPass,String sOwnPass) throws Exception {
+	public boolean encryptFile(String sSourceDir, String sDestDir,byte[] byteUserPass,byte[] byteOwnerPass) {
+		return encryptFile(new File(sSourceDir),new File(sDestDir),byteUserPass,byteOwnerPass);
+	}	
+	/**
+	 * copy dir to dir , some specify file will encode
+	 * 
+	 * @param aSourceDir
+	 *            source directory
+	 * @param aDestDir
+	 * @param byteUserPass user password , can be null
+	 * @param byteOwnerPass  owner password , can be null
+	 *
+	 */
+	public boolean encryptFile(File aSourceDir, File aDestDir,byte[] byteUserPass,byte[] byteOwnerPass) {
+		String sSourceDir = aSourceDir.getAbsolutePath();
+		String sDestDir = aDestDir.getAbsolutePath();
 		File aFiles[] = null;
-		File aSourceDir = new File(sSourceDir);
+		boolean bSuccess = false;
 		if (aSourceDir.isDirectory()) {
 			aFiles = aSourceDir.listFiles();
 			for (int i = 0; i < aFiles.length; i++) {
 				if (aFiles[i].isDirectory())
-					encryptFile(aFiles[i], new File(sDestDir + getNearestDir(aFiles[i].getPath())),sUserPass,sOwnPass);
+					try {
+						bSuccess = encryptFile(aFiles[i], new File(sDestDir + getNearestDir(aFiles[i].getPath())),byteUserPass,byteOwnerPass);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						bSuccess = false;
+					}
 				else if (aFiles[i].isFile()) {
-					encrypSingleFile(aFiles[i], new File(sDestDir),sUserPass,sOwnPass);
-				} else
-					throw new Exception("Dir Copy Fail: file type error");
+					bSuccess = encrypSingleFile(aFiles[i], new File(sDestDir),byteUserPass,byteOwnerPass);
+				} else {
+				  System.out.println("Dir Copy Fail: file type error");
+				}
 			}
-		} else
-			return;
-	}	
+		} 
+		return bSuccess;
+	}
 	
 	private String getNearestDir(String sDir) throws Exception {
 		StringTokenizer aST = new StringTokenizer(sDir, System.getProperty("file.separator"));
@@ -140,28 +145,37 @@ public class EncryptPDF {
 	}
 
 
+
+
 	/**
 	 * copy file to dest directory
 	 * 
 	 * @param sourceFile
 	 * @param destDir
 	 */
-	private void encrypSingleFile(File sourceFile, File destDir,String sUserPass,String sOwnPass) throws Exception {
+	private boolean encrypSingleFile(File sourceFile, File destDir,byte[] byteUserPass,byte[] byteOwnerPass) {
 		boolean bSuccess = false;
 		byte[] buffer = new byte[4096]; // You can change the size of this if you want.
 		destDir.mkdirs(); // creates the directory if it doesn't already exist.
 		File destFile = new File(destDir, sourceFile.getName());
-		FileInputStream in = new FileInputStream(sourceFile);
-		FileOutputStream out = new FileOutputStream(destFile);
+		FileInputStream in;
+		FileOutputStream out;
+		try {
+			in = new FileInputStream(sourceFile);
+			out = new FileOutputStream(destFile);
 		System.out.println("convert pdf , name = " + sourceFile.getAbsolutePath());
 		plugin(sourceFile, destDir);
-		bSuccess = EncryptPDFAndHideToolBar(in, out,sUserPass,sOwnPass);
+		bSuccess = EncryptPDFAndHideToolBar(in, out,byteUserPass,byteOwnerPass);
 		out.close();
 		in.close();
+		} catch (Exception e) {
+			bSuccess = false;
+		}
 		if (!bSuccess) {
 			System.out.println("Pdf encrypt fail , copy original to dest dir");
 			fileCopy2DirWithNoEncrypt(sourceFile, destDir);
 		}
+		return bSuccess;
 	}
 
 	/**
@@ -170,11 +184,12 @@ public class EncryptPDF {
 	 * @param sourceFile
 	 * @param destDir
 	 */
-	private void fileCopy2DirWithNoEncrypt(File sourceFile, File destDir) throws Exception {
+	private boolean fileCopy2DirWithNoEncrypt(File sourceFile, File destDir)  {
 		byte[] buffer = new byte[4096]; // You can change the size of this if you want.
 
 		destDir.mkdirs(); // creates the directory if it doesn't already exist.
-
+        boolean bSuccess = true;
+		try {
 		File destFile = new File(destDir, sourceFile.getName());
 		FileInputStream in = new FileInputStream(sourceFile);
 		FileOutputStream out = new FileOutputStream(destFile);
@@ -186,14 +201,18 @@ public class EncryptPDF {
 		}
 		out.close();
 		in.close();
+		}catch(Exception ee) {
+			bSuccess = false;
+		}
+		return bSuccess;
 	}
 
-	public boolean EncryptPDFAndHideToolBar(InputStream aIS, OutputStream aOS,String sUserPass,String sOwnPass) {
+	private boolean EncryptPDFAndHideToolBar(InputStream aIS, OutputStream aOS,byte[] byteUserPass,byte[] byteOwnerPass) {
 		try {
 			PdfReader reader = new PdfReader(aIS);
 			java.util.List pdfReaderList = new ArrayList<PdfReader>();
 			pdfReaderList.add(reader);
-			return EncryptPDFAndHideToolBar(pdfReaderList, aOS,sUserPass,sOwnPass);
+			return EncryptPDFAndHideToolBar(pdfReaderList, aOS,byteUserPass,byteOwnerPass);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -203,23 +222,19 @@ public class EncryptPDF {
 	/**
 	 * Merge multi pdf and output pdf with hidden toolbar
 	 */
-	public boolean EncryptPDFAndHideToolBar(java.util.List pdfReaderList, OutputStream aOS,String sUserPass,String sOwnPass) {
+	private boolean EncryptPDFAndHideToolBar(java.util.List pdfReaderList, OutputStream aOS,byte[] byteUserPass,byte[] byteOwnerPass) {
 
 		try {
 			if (null != pdfReaderList && !pdfReaderList.isEmpty()) {
 				Iterator iter = pdfReaderList.iterator();
 				while (iter.hasNext()) {
-					String pageNOs = "";
 					PdfReader pdfReader = (PdfReader) iter.next();
 					if (pdfReader.isEncrypted()) {
 						return false;
 					} else {
-						byte[] byteUserPass = null;
-						byte[] byteOwnPass = null;
-						if(  sUserPass!=null ) byteUserPass = sUserPass.getBytes();
-						if(  sOwnPass!=null ) byteOwnPass = sOwnPass.getBytes();
-						
-						WriterProperties aWP = new WriterProperties().setStandardEncryption(byteUserPass, byteOwnPass,
+						pdfReader.setUnethicalReading(true);
+
+						WriterProperties aWP = new WriterProperties().setStandardEncryption(byteUserPass, byteOwnerPass,
 								~(EncryptionConstants.ALLOW_PRINTING | EncryptionConstants.ALLOW_SCREENREADERS
 										| EncryptionConstants.ALLOW_MODIFY_ANNOTATIONS
 										| EncryptionConstants.ALLOW_DEGRADED_PRINTING | EncryptionConstants.ALLOW_COPY
