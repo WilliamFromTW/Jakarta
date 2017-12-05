@@ -1,7 +1,8 @@
-v3.1-snapshot
+v3.1-SNAPSHOT
 --
 1. Update itext7 library to 7.0.4 - 2017/07/26
 2. New class "EncryptPDF" that can encrypt PDF and hide PDF tool bar - 2017/12/01
+3. New class AppEncryptPDF that use swing GUI - 2017/12/04
 
 v3.0 - 2017/07/07 
 --

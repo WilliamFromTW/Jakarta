@@ -5,7 +5,7 @@ compileJava.options.encoding = 'UTF-8'
 javadoc.options.encoding = 'UTF-8'  
 
 archivesBaseName = 'InMethodJakarta'
-version = '3.01-snapshot'
+version = '3.1-SNAPSHOT'
 
 
 repositories {

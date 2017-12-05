@@ -60,9 +60,7 @@ public class EncryptPDF {
 		    aConvert.encryptFile(args[0], args[1],null,args[3].getBytes());
  	      else
 		    aConvert.encryptFile(args[0], args[1],args[2].getBytes(),args[3].getBytes());
- 	    }  
- 	    	
-		
+ 	    }
 	}
 
 
@@ -154,27 +152,30 @@ public class EncryptPDF {
 	 * @param destDir
 	 */
 	private boolean encrypSingleFile(File sourceFile, File destDir,byte[] byteUserPass,byte[] byteOwnerPass) {
-		boolean bSuccess = false;
-		byte[] buffer = new byte[4096]; // You can change the size of this if you want.
+		boolean bSuccess = true;
 		destDir.mkdirs(); // creates the directory if it doesn't already exist.
 		File destFile = new File(destDir, sourceFile.getName());
 		FileInputStream in;
 		FileOutputStream out;
+		   if( isExtName(sourceFile.getName())) {
 		try {
 			in = new FileInputStream(sourceFile);
 			out = new FileOutputStream(destFile);
-		System.out.println("convert pdf , name = " + sourceFile.getAbsolutePath());
-		plugin(sourceFile, destDir);
-		bSuccess = EncryptPDFAndHideToolBar(in, out,byteUserPass,byteOwnerPass);
-		out.close();
-		in.close();
-		} catch (Exception e) {
+		  System.out.println("convert pdf , name = " + sourceFile.getAbsolutePath());
+		  plugin(sourceFile, destDir);
+		  bSuccess = EncryptPDFAndHideToolBar(in, out,byteUserPass,byteOwnerPass);
+		  out.close();
+		  in.close();
+		   
+		  } catch (Exception e) {
 			bSuccess = false;
-		}
+		  }
+		
 		if (!bSuccess) {
 			System.out.println("Pdf encrypt fail , copy original to dest dir");
 			fileCopy2DirWithNoEncrypt(sourceFile, destDir);
 		}
+		   }
 		return bSuccess;
 	}
 
@@ -260,5 +261,16 @@ public class EncryptPDF {
 		}
 		return false;
 	}
-
+	  private  boolean isExtName(String sFile){
+		    String sExt = null;
+		    String kk = null;
+		    StringTokenizer aST = new StringTokenizer(sFile,".");
+		    while( aST.hasMoreTokens() ){
+		      sExt=aST.nextToken();
+		    }
+		    if( "pdf".equalsIgnoreCase (sExt) )
+		        return true;
+		    else
+		      return false;
+		  }
 }
