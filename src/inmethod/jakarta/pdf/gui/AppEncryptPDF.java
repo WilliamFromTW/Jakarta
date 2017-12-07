@@ -14,6 +14,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
 import inmethod.commons.util.AppDataConfig;
+import inmethod.commons.util.SystemConfig;
 import inmethod.jakarta.pdf.EncryptPDF;
 
 import javax.swing.JTextField;
@@ -39,6 +40,7 @@ public class AppEncryptPDF {
 	private JPasswordField passwordUser;
 	private JPasswordField passwordOwner;
 	private AppDataConfig aAppDataConfig;
+	private SystemConfig aSystemConfig;
 
 	/**
 	 * Launch the application.
@@ -68,6 +70,7 @@ public class AppEncryptPDF {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		aSystemConfig = new SystemConfig("inmethod.jakarta.pdf.gui.AppEncryptPDF");
 		aAppDataConfig = new AppDataConfig("JakartaPDFConfig");
 		if( aAppDataConfig.getKeyValue("source")==null)
 		  aAppDataConfig.setKeyValue("source",".\\source");
@@ -80,29 +83,29 @@ public class AppEncryptPDF {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
-		JLabel label = new JLabel("來源路徑(必)");
+		JLabel label = new JLabel(aSystemConfig.getValue("source_dir"));
 		label.setFont(new Font("Dialog", Font.BOLD, 16));
 		label.setBounds(12, 75, 181, 31);
 		frame.getContentPane().add(label);
 
-		JLabel label_1 = new JLabel("目標路徑(必)");
+		JLabel label_1 = new JLabel(aSystemConfig.getValue("dest_dir"));
 		label_1.setFont(new Font("Dialog", Font.BOLD, 16));
 		label_1.setBounds(12, 107, 181, 20);
 		frame.getContentPane().add(label_1);
 
-		JLabel lblPdf = new JLabel("PDF文件保全設定");
+		JLabel lblPdf = new JLabel(aSystemConfig.getValue("title"));
 		lblPdf.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPdf.setForeground(Color.BLUE);
 		lblPdf.setFont(new Font("Dialog", Font.BOLD, 24));
-		lblPdf.setBounds(162, 12, 258, 57);
+		lblPdf.setBounds(36, 12, 485, 57);
 		frame.getContentPane().add(lblPdf);
 
-		JLabel label_2 = new JLabel("設定文件開啟密碼(選)");
+		JLabel label_2 = new JLabel(aSystemConfig.getValue("pdf_open_password"));
 		label_2.setFont(new Font("Dialog", Font.BOLD, 16));
 		label_2.setBounds(12, 168, 181, 20);
 		frame.getContentPane().add(label_2);
 
-		JLabel label_3 = new JLabel("設定文件保全密碼(必)");
+		JLabel label_3 = new JLabel(aSystemConfig.getValue("pdf_security"));
 		label_3.setFont(new Font("Dialog", Font.BOLD, 16));
 		label_3.setBounds(12, 200, 181, 20);
 		frame.getContentPane().add(label_3);
@@ -114,7 +117,7 @@ public class AppEncryptPDF {
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser chooser = new JFileChooser();
 				chooser.setCurrentDirectory(new java.io.File(txtSource.getText()));
-				chooser.setDialogTitle("請選擇目錄");
+				chooser.setDialogTitle(aSystemConfig.getValue("choose_dir"));
 				chooser.setMultiSelectionEnabled(false);
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				//
@@ -141,7 +144,7 @@ public class AppEncryptPDF {
 				JFileChooser chooser = new JFileChooser();
 				chooser.setCurrentDirectory(new java.io.File(txtDest.getText()));
 				chooser.setMultiSelectionEnabled(false);
-				chooser.setDialogTitle("請選擇目錄");
+				chooser.setDialogTitle(aSystemConfig.getValue("choose_dir"));
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				//
 				// disable the "All files" option.
@@ -169,24 +172,24 @@ public class AppEncryptPDF {
 		passwordOwner.setBounds(204, 196, 146, 28);
 		frame.getContentPane().add(passwordOwner);
 
-		JButton btnNewButton = new JButton("確定");
+		JButton btnNewButton = new JButton(aSystemConfig.getValue("execute"));
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				boolean bSuccess = true;
 				if (txtSource.getText().trim().equals("") || txtDest.getText().trim().equals("")) {
-					JOptionPane.showMessageDialog(null, "請輸入來源路徑或是目標路徑");
+					JOptionPane.showMessageDialog(null, aSystemConfig.getValue("choose_source_or_dest_dir"));
 					bSuccess = false;
 				}
 				System.out.println();
 				if (passwordOwner.getPassword().length == 0) {
-					JOptionPane.showMessageDialog(null, "請輸入文件保全密碼");
+					JOptionPane.showMessageDialog(null, aSystemConfig.getValue("input_security_password"));
 					bSuccess = false;
 				}
 				if (bSuccess) {
 					
 					 final JDialog loading = new JDialog(frame);
 					    JPanel p1 = new JPanel(new BorderLayout());
-					    p1.add(new JLabel("Please wait..."), BorderLayout.CENTER);
+					    p1.add(new JLabel(aSystemConfig.getValue("please_wait")), BorderLayout.CENTER);
 					    loading.setUndecorated(true);
 					    loading.getContentPane().add(p1);
 					    loading.pack();
@@ -209,9 +212,9 @@ public class AppEncryptPDF {
 									bSuccess = EncryptPDF.getInstance().encryptFile(txtSource.getText(), txtDest.getText(),
 											toBytes(passwordUser.getPassword()), toBytes(passwordOwner.getPassword()));
 								if (bSuccess)
-									JOptionPane.showMessageDialog(null, "PDF轉換成功");
+									JOptionPane.showMessageDialog(null,  aSystemConfig.getValue("pdf_convert_success"));
 								else
-									JOptionPane.showMessageDialog(null, "PDF轉換失敗");					        	
+									JOptionPane.showMessageDialog(null, aSystemConfig.getValue("pdf_convert_fail"));					        	
 					        	return null;
 					        }
 					        @Override
@@ -237,7 +240,7 @@ public class AppEncryptPDF {
 		btnNewButton.setBounds(216, 263, 104, 23);
 		frame.getContentPane().add(btnNewButton);
 		
-		JLabel lblsnapshot = new JLabel("3.1-SNAPSHOT 2017/12/05");
+		JLabel lblsnapshot = new JLabel("3.1-SNAPSHOT 2017/12/06");
 		lblsnapshot.setBounds(379, 298, 167, 13);
 		frame.getContentPane().add(lblsnapshot);
 	}
