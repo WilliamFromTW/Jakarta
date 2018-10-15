@@ -16,7 +16,8 @@
    commons-net-1.2.2.jar    
    commons-collections4-4.1.jar    
    commons-codec-1.10.jar    
-        
+   xbean.jar( version  3.0.1 )
+   
 ### lib for Git utility
    slf4j-api-1.7.22.jar    
    jsch-0.1.54.jar    
