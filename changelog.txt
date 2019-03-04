@@ -1,10 +1,14 @@
-v3.1-SNAPSHOT
+v3.1 - 2019/03/04
 --
 1. Update itext7 library to 7.0.4 - 2017/07/26
 2. New class "EncryptPDF" that can encrypt PDF and hide PDF tool bar - 2017/12/01
 3. New class AppEncryptPDF that use swing GUI(use i18n properties) - 2017/12/06
 4. add xbean.jar to handle xml exception (create excel) - 2018/10/15
-5. use InMethod 2.03
+5. use InMethod 2.03 - 2018/10/15
+6. add jxcel(excel to pdf) note: jxcel is not free - 2019/02/22 (removed in 2019/02/23)
+7. itext7 upgrade from 7.0.4 to 7.1.5 - 2019/02/22
+8. add AutoSizeColumn in CreateXLSX class - 2019/02/22
+9. add jasper report component
 
 v3.0 - 2017/07/07 
 --

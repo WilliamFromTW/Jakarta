@@ -2,7 +2,8 @@ package inmethod.jakarta.pdf.certificate;
 
 import com.itextpdf.io.font.FontConstants;
 import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.kernel.color.Color;
+import com.itextpdf.kernel.colors.Color;
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.Rectangle;
@@ -141,7 +142,7 @@ public class DigitalSignaturePDF {
 			//System.out.println("asdf" + width);
 			float height = n0.getBBox().toRectangle().getHeight();
 			PdfCanvas canvas = new PdfCanvas(n0, signer.getDocument());
-			canvas.setFillColor(Color.LIGHT_GRAY);
+			canvas.setFillColor(ColorConstants.LIGHT_GRAY);
 			canvas.rectangle(x, y, width, height);
 			canvas.fill();
 			//System.out.println("font size=" + (float) ((float) width / 12.6));

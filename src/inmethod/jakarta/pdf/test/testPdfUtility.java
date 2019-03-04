@@ -12,7 +12,7 @@ public class testPdfUtility {
 	}
 
 	public static void readFieldValues() {
-		String sSrc = "/media/veracrypt2/william.fromtw@gmail.com/Dropbox/git/src/inmethod/Java/InMethodJakarta/test_files/certificate/TEST.pdf";
+		String sSrc = "test_files/certificate/TEST.pdf";
 		try {
 			
 			InputStream aIS = new FileInputStream(new File(sSrc));

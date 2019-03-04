@@ -23,11 +23,12 @@
    jsch-0.1.54.jar    
    org.eclipse.jgit-4.6.0.201612231935-r.jar    
         
-### lib for digital sinature pdf utility
-   bcprov-jdk15on-156.jar  
-   bcpkix-jdk15on-156.jar      
-   itext7-*.jar
-   slf4j-api-1.7.22.jar 
+### lib for itext (digital sinature) pdf utility
+   jar file in directory "itext"    
+   
+### lib for jasper report    
+   jar file in directory "jasper_report"     
+   ps. font file(TTF) in "Arial Unicode.jar" should install in system first (just double click ttf file and install)    
    
        
         
