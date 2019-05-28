@@ -72,6 +72,7 @@ public class GitUtil {
 			}
 			return true;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -367,24 +368,28 @@ public class GitUtil {
 	 */
 	public static void main(String ar[]) {
 		GitUtil aGitUtil;
+		
 		String sRemoteUrl = ar[0];
 		String sLocalDirectory = ar[1];
 		String sUserName = ar[2];
 		String sUserPassword = ar[3];
+
+		
+		
 		try {
 			aGitUtil = new GitUtil(sRemoteUrl, sLocalDirectory);
 
-			System.out.println("Remote repository exists ? " + aGitUtil.checkRemoteRepository(ar[2], ar[3]));
+			System.out.println("Remote repository exists ? " + aGitUtil.checkRemoteRepository(sUserName, sUserPassword));
 			System.out.println("Local repository exists ? " + aGitUtil.checkLocalRepository());
-			if (aGitUtil.checkRemoteRepository(ar[2], ar[3]) && !aGitUtil.checkLocalRepository()) {
+			if (aGitUtil.checkRemoteRepository(sUserName, sUserPassword) && !aGitUtil.checkLocalRepository()) {
 				System.out.println("try to clone remote repository if local repository is not exists \n");
 				if (aGitUtil.clone(sUserName, sUserPassword))
 					System.out.println("clone finished!");
 				else
 					System.out.println("clone failed!");
-			} else if (aGitUtil.checkRemoteRepository(ar[2], ar[3]) && aGitUtil.checkLocalRepository()) {
+			} else if (aGitUtil.checkRemoteRepository(sUserName, sUserPassword) && aGitUtil.checkLocalRepository()) {
 				System.out.println("pull branch = " + aGitUtil.getDefaultBranch() + " , status : "
-						+ aGitUtil.update(ar[2], ar[3]));
+						+ aGitUtil.update(sUserName, sUserPassword));
 			}
 
 			System.out.println("Default branch : " + aGitUtil.getDefaultBranch());
