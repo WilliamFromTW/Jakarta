@@ -37,6 +37,7 @@ public class GitUtil {
 	}
 
 	public void close() {
+		if(git!=null)
 		git.close();
 	}
 	
