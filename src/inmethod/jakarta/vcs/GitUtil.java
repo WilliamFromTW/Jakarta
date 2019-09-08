@@ -36,6 +36,9 @@ public class GitUtil {
 	private GitUtil() {
 	}
 
+	public void close() {
+		git.close();
+	}
 	
 	public GitUtil(String sRemoteUrl, String sLocalDirectory) throws Exception {
 		this.sRemoteUrl = sRemoteUrl;
@@ -412,6 +415,7 @@ public class GitUtil {
 					}
 					System.out.println("");
 				}
+				aGitUtil.close();
 			}
 
 		} catch (Exception e) {

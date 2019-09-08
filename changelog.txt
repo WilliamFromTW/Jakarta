@@ -1,3 +1,7 @@
+v3.1p3 - 2019/09/08
+1. add close in GitUtil
+
+
 v3.1p2 - 2019/05/28
 --
 1. jgit library downgrade to version 4.5 (compatible with android p)
