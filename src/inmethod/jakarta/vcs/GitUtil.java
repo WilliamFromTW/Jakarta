@@ -54,7 +54,7 @@ public class GitUtil {
 	}
 
 
-	public static String getShortName(String sName){
+	public static String getGitShortName(String sName){
 		return Repository.shortenRefName(sName);
 	}
 	
@@ -95,6 +95,35 @@ public class GitUtil {
 		}
 	}
 
+	public boolean removeLocalGitRepository() {
+		if (this.sLocalDirectory == null)
+			return false;
+		try {
+			FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
+			Repository repository = repositoryBuilder.setGitDir(aLocalGitFile).findGitDir().build();
+			// System.out.println("default branch = " + repository.getBranch());
+			
+			if (repository.findRef("HEAD") != null) {
+				return deleteDir(repository.getDirectory().getParentFile());
+			} else {
+				return false;
+			}
+		} catch (Exception ee) {
+			return false;
+		}
+	}
+	public static boolean deleteDir(File dir) {
+	    if (dir.isDirectory()) {
+	        String[] children = dir.list();
+	        for (int i=0; i<children.length; i++) {
+	            boolean success = deleteDir(new File(dir, children[i]));
+	            if (!success) {
+	                return false;
+	            }
+	        }
+	    }
+	    return dir.delete();
+	}
 	/**
 	 * check local directory is git repository
 	 * @return
@@ -106,7 +135,7 @@ public class GitUtil {
 			FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
 			Repository repository = repositoryBuilder.setGitDir(aLocalGitFile).findGitDir().build();
 			// System.out.println("default branch = " + repository.getBranch());
-
+			
 			if (repository.findRef("HEAD") != null) {
 				return true;
 			} else {
