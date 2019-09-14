@@ -2,6 +2,8 @@ v3.1p4
 1. add close in GitUtil - 2019/09/08(v3.1p3)
 2. add removeLocalGitRepository in GitUtil - 2019/09/13
 3. add commit in GitUtil - 2019/09/14
+4. method update() in GitUtil changed to pull() - 2019/09/14
+5. add push() in GitUtil - 2019/09/14
 
 v3.1p2 - 2019/05/28
 --

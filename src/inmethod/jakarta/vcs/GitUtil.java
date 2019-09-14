@@ -315,13 +315,28 @@ public class GitUtil {
 	 * @param sUserName
 	 * @param sPasswd
 	 * @param sMessage
-	 * @param sRemote  default is origin
 	 * @return
 	 */
-	public boolean commit(String sUserName, String sPasswd,String sMessage,String sRemote) {
+	public boolean commit(String sUserName, String sPasswd,String sMessage) {
 		try {
 			git.add().addFilepattern(".").call();
 			git.commit().setMessage( sMessage ).call();
+			return true;
+		}catch(Exception ee) {
+			ee.printStackTrace();
+		}
+		return false;
+	}	
+	
+	/**
+	 * 
+	 * @param sRemote default is origin
+	 * @param sUserName
+	 * @param sPasswd
+	 * @return
+	 */
+	public boolean push(String sRemote,String sUserName, String sPasswd) {	
+		try {
 			if (sUserName != null && sPasswd != null) {
 				X509TrustManager a = new X509TrustManager() {
 					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
@@ -366,8 +381,8 @@ public class GitUtil {
 	 * 
 	 * @return
 	 */
-	public boolean update() {
-		return update(null, null);
+	public boolean pull() {
+		return pull(null, null);
 	}
 
 	/**
@@ -377,7 +392,7 @@ public class GitUtil {
 	 * @param sPasswd
 	 * @return
 	 */
-	public boolean update(String sUserName, String sPasswd) {
+	public boolean pull(String sUserName, String sPasswd) {
 		try {
 			if (sUserName != null && sPasswd != null) {
 				X509TrustManager a = new X509TrustManager() {
@@ -473,7 +488,7 @@ public class GitUtil {
 					System.out.println("clone failed!");
 			} else if (aGitUtil.checkRemoteRepository(sUserName, sUserPassword) && aGitUtil.checkLocalRepository()) {
 				System.out.println("pull branch = " + aGitUtil.getDefaultBranch() + " , status : "
-						+ aGitUtil.update(sUserName, sUserPassword));
+						+ aGitUtil.pull(sUserName, sUserPassword));
 			}
 
 			System.out.println("Default branch : " + aGitUtil.getDefaultBranch());
