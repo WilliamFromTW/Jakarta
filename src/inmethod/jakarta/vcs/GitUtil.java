@@ -309,6 +309,57 @@ public class GitUtil {
 		}
 
 	}
+	
+	/**
+	 * 
+	 * @param sUserName
+	 * @param sPasswd
+	 * @param sMessage
+	 * @param sRemote  default is origin
+	 * @return
+	 */
+	public boolean commit(String sUserName, String sPasswd,String sMessage,String sRemote) {
+		try {
+			git.add().addFilepattern(".").call();
+			git.commit().setMessage( sMessage ).call();
+			if (sUserName != null && sPasswd != null) {
+				X509TrustManager a = new X509TrustManager() {
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+
+					public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+
+					public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+				};
+				TrustManager[] trustAllCerts = new TrustManager[] { a };
+				
+				try {
+					SSLContext sc = SSLContext.getInstance("SSL");
+					sc.init(null, trustAllCerts, new java.security.SecureRandom());
+					HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+				} catch (GeneralSecurityException e) {
+					// e.printStackTrace();
+				}
+				HostnameVerifier allHostsValid = new HostnameVerifier() {
+					public boolean verify(String hostname, SSLSession session) {
+						return true;
+					}
+				};
+				HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
+				git.push().setCredentialsProvider(cp).setRemote(sRemote).call();
+			}			
+			return true;
+		}catch(Exception ee) {
+			ee.printStackTrace();
+		}
+		return false;
+		
+	}
 
 	/**
 	 * No Need for user name and password.
