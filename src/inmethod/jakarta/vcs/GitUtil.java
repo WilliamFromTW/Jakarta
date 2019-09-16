@@ -317,8 +317,9 @@ public class GitUtil {
 	 * @param sMessage
 	 * @return
 	 */
-	public boolean commit(String sUserName, String sPasswd,String sMessage) {
+	public boolean commit(String sMessage) {
 		try {
+			git.add().setUpdate(true).addFilepattern(".").call();
 			git.add().addFilepattern(".").call();
 			git.commit().setMessage( sMessage ).call();
 			return true;
@@ -335,9 +336,9 @@ public class GitUtil {
 	 * @param sMessage
 	 * @return
 	 */
-	public boolean commit(String sUserName, String sPasswd,String sMessage,String sAuthorName,String sAuthorEmail) {
+	public boolean commit(String sMessage,String sAuthorName,String sAuthorEmail) {
 		try {
-			
+			git.add().setUpdate(true).addFilepattern(".").call();
 			git.add().addFilepattern(".").call();
 			git.commit().setAuthor(sAuthorName,sAuthorEmail).setMessage( sMessage ).call();
 			return true;
