@@ -4,6 +4,7 @@ v3.1p4
 3. add commit in GitUtil - 2019/09/14
 4. method update() in GitUtil changed to pull() - 2019/09/14
 5. add push() in GitUtil - 2019/09/14
+6. add commit author name and email - 2019/09/15
 
 v3.1p2 - 2019/05/28
 --

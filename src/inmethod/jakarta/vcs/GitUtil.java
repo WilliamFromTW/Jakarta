@@ -327,6 +327,25 @@ public class GitUtil {
 		}
 		return false;
 	}	
+
+	/**
+	 * 
+	 * @param sUserName
+	 * @param sPasswd
+	 * @param sMessage
+	 * @return
+	 */
+	public boolean commit(String sUserName, String sPasswd,String sMessage,String sAuthorName,String sAuthorEmail) {
+		try {
+			
+			git.add().addFilepattern(".").call();
+			git.commit().setAuthor(sAuthorName,sAuthorEmail).setMessage( sMessage ).call();
+			return true;
+		}catch(Exception ee) {
+			ee.printStackTrace();
+		}
+		return false;
+	}	
 	
 	/**
 	 * 
@@ -364,7 +383,6 @@ public class GitUtil {
 					}
 				};
 				HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
 				git.push().setCredentialsProvider(cp).setRemote(sRemote).call();
 			}			
