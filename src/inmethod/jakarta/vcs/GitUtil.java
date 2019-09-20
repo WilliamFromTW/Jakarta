@@ -37,10 +37,10 @@ public class GitUtil {
 	}
 
 	public void close() {
-		if(git!=null)
-		git.close();
+		if (git != null)
+			git.close();
 	}
-	
+
 	public GitUtil(String sRemoteUrl, String sLocalDirectory) throws Exception {
 		this.sRemoteUrl = sRemoteUrl;
 		this.sLocalDirectory = sLocalDirectory;
@@ -53,25 +53,30 @@ public class GitUtil {
 		}
 	}
 
-	
-	public  boolean createLocalRepository() {
-		
+	/**
+	 * create local git repository
+	 * 
+	 * @return
+	 */
+	public boolean createLocalRepository() {
+
 		try {
-			git =  Git.init().setDirectory( new File(sLocalDirectory)).call();
+			git = Git.init().setDirectory(new File(sLocalDirectory)).call();
 			return true;
 		} catch (IllegalStateException | GitAPIException e) {
 			e.printStackTrace();
 		}
 		return false;
-		
+
 	}
 
-	public static String getGitShortName(String sName){
+	public static String getGitShortName(String sName) {
 		return Repository.shortenRefName(sName);
 	}
-	
+
 	/**
 	 * clone from remote repository to local repository
+	 * 
 	 * @param sUserName
 	 * @param sPasswd
 	 * @return
@@ -95,6 +100,7 @@ public class GitUtil {
 
 	/**
 	 * get default checkout repository
+	 * 
 	 * @return
 	 */
 	public String getDefaultBranch() {
@@ -114,7 +120,7 @@ public class GitUtil {
 			FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
 			Repository repository = repositoryBuilder.setGitDir(aLocalGitFile).findGitDir().build();
 			// System.out.println("default branch = " + repository.getBranch());
-			
+
 			if (repository.findRef("HEAD") != null) {
 				return deleteDir(repository.getDirectory().getParentFile());
 			} else {
@@ -124,20 +130,23 @@ public class GitUtil {
 			return false;
 		}
 	}
+
 	public static boolean deleteDir(File dir) {
-	    if (dir.isDirectory()) {
-	        String[] children = dir.list();
-	        for (int i=0; i<children.length; i++) {
-	            boolean success = deleteDir(new File(dir, children[i]));
-	            if (!success) {
-	                return false;
-	            }
-	        }
-	    }
-	    return dir.delete();
+		if (dir.isDirectory()) {
+			String[] children = dir.list();
+			for (int i = 0; i < children.length; i++) {
+				boolean success = deleteDir(new File(dir, children[i]));
+				if (!success) {
+					return false;
+				}
+			}
+		}
+		return dir.delete();
 	}
+
 	/**
 	 * check local directory is git repository
+	 * 
 	 * @return
 	 */
 	public boolean checkLocalRepository() {
@@ -147,7 +156,7 @@ public class GitUtil {
 			FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
 			Repository repository = repositoryBuilder.setGitDir(aLocalGitFile).findGitDir().build();
 			// System.out.println("default branch = " + repository.getBranch());
-			
+
 			if (repository.findRef("HEAD") != null) {
 				return true;
 			} else {
@@ -160,6 +169,7 @@ public class GitUtil {
 
 	/**
 	 * No Need for user name and password.
+	 * 
 	 * @return
 	 */
 	public boolean checkRemoteRepository() {
@@ -220,6 +230,7 @@ public class GitUtil {
 
 	/**
 	 * get all local tag object.
+	 * 
 	 * @return
 	 */
 	public List<Ref> getLocalTags() {
@@ -249,56 +260,62 @@ public class GitUtil {
 
 	/**
 	 * get Tag create date
+	 * 
 	 * @param aTag
 	 * @return format yyyyMMddHHmm
 	 */
-	public String getTagDate(Ref aTag){
-		return getTagDate(aTag,"yyyyMMddHHmm");
-	}	
+	public String getTagDate(Ref aTag) {
+		return getTagDate(aTag, "yyyyMMddHHmm");
+	}
 
 	/**
 	 * get Tag create date
+	 * 
 	 * @param aTag
-	 * @param sFormat SimpleDateFormat ex: "yyyyMMddHHmm"
+	 * @param sFormat
+	 *            SimpleDateFormat ex: "yyyyMMddHHmm"
 	 * @return format yyyyMMddHHmm
 	 */
-	public String getTagDate(Ref aTag,String sFormat){
+	public String getTagDate(Ref aTag, String sFormat) {
 		SimpleDateFormat sdf = new SimpleDateFormat(sFormat);
-		
+
 		final RevWalk walk = new RevWalk(git.getRepository());
 		try {
-			return  sdf.format(walk.parseTag(aTag.getObjectId()).getTaggerIdent().getWhen());
+			return sdf.format(walk.parseTag(aTag.getObjectId()).getTaggerIdent().getWhen());
 		} catch (IOException e) {
 			return "";
 		}
 	}
-	
-	/**
-	 * get commit  date
-	 * @param aTag
-	 * @return format yyyyMMddHHmm
-	 */
-	public String getCommitDate(Ref aTag){
-		return getCommitDate(aTag,"yyyyMMddHHmm");
-	}	
 
 	/**
-	 * get Commit  date
+	 * get commit date
+	 * 
 	 * @param aTag
-	 * @param sFormat SimpleDateFormat ex: "yyyyMMddHHmm"
 	 * @return format yyyyMMddHHmm
 	 */
-	public String getCommitDate(Ref aTag,String sFormat){
+	public String getCommitDate(Ref aTag) {
+		return getCommitDate(aTag, "yyyyMMddHHmm");
+	}
+
+	/**
+	 * get Commit date
+	 * 
+	 * @param aTag
+	 * @param sFormat
+	 *            SimpleDateFormat ex: "yyyyMMddHHmm"
+	 * @return format yyyyMMddHHmm
+	 */
+	public String getCommitDate(Ref aTag, String sFormat) {
 		SimpleDateFormat sdf = new SimpleDateFormat(sFormat);
 		final RevWalk walk2 = new RevWalk(git.getRepository());
-		
+
 		try {
-			return  sdf.format(walk2.parseCommit(((Ref) aTag).getObjectId()).getCommitTime()*1000L );
+			return sdf.format(walk2.parseCommit(((Ref) aTag).getObjectId()).getCommitTime() * 1000L);
 		} catch (IOException e) {
 			return "";
 		}
 	}
-	
+
 	public List<Ref> getBranches() {
 		try {
 			return Git.open(aLocalGitFile).branchList().setListMode(ListMode.ALL).call();
@@ -308,7 +325,9 @@ public class GitUtil {
 	}
 
 	/**
-	 * checkout repository by  a tag name or branch name (compatible for short name or long name)
+	 * checkout repository by a tag name or branch name (compatible for short name
+	 * or long name)
+	 * 
 	 * @param sTagName
 	 * @return
 	 */
@@ -321,7 +340,7 @@ public class GitUtil {
 		}
 
 	}
-	
+
 	/**
 	 * 
 	 * @param sUserName
@@ -333,13 +352,13 @@ public class GitUtil {
 		try {
 			git.add().setUpdate(true).addFilepattern(".").call();
 			git.add().addFilepattern(".").call();
-			git.commit().setMessage( sMessage ).call();
+			git.commit().setMessage(sMessage).call();
 			return true;
-		}catch(Exception ee) {
+		} catch (Exception ee) {
 			ee.printStackTrace();
 		}
 		return false;
-	}	
+	}
 
 	/**
 	 * 
@@ -348,26 +367,27 @@ public class GitUtil {
 	 * @param sMessage
 	 * @return
 	 */
-	public boolean commit(String sMessage,String sAuthorName,String sAuthorEmail) {
+	public boolean commit(String sMessage, String sAuthorName, String sAuthorEmail) {
 		try {
 			git.add().setUpdate(true).addFilepattern(".").call();
 			git.add().addFilepattern(".").call();
-			git.commit().setAuthor(sAuthorName,sAuthorEmail).setMessage( sMessage ).call();
+			git.commit().setAuthor(sAuthorName, sAuthorEmail).setMessage(sMessage).call();
 			return true;
-		}catch(Exception ee) {
+		} catch (Exception ee) {
 			ee.printStackTrace();
 		}
 		return false;
-	}	
-	
+	}
+
 	/**
 	 * 
-	 * @param sRemote default is origin
+	 * @param sRemote
+	 *            default is origin
 	 * @param sUserName
 	 * @param sPasswd
 	 * @return
 	 */
-	public boolean push(String sRemote,String sUserName, String sPasswd) {	
+	public boolean push(String sRemote, String sUserName, String sPasswd) {
 		try {
 			if (sUserName != null && sPasswd != null) {
 				X509TrustManager a = new X509TrustManager() {
@@ -382,7 +402,7 @@ public class GitUtil {
 					}
 				};
 				TrustManager[] trustAllCerts = new TrustManager[] { a };
-				
+
 				try {
 					SSLContext sc = SSLContext.getInstance("SSL");
 					sc.init(null, trustAllCerts, new java.security.SecureRandom());
@@ -398,13 +418,13 @@ public class GitUtil {
 				HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
 				git.push().setCredentialsProvider(cp).setRemote(sRemote).call();
-			}			
+			}
 			return true;
-		}catch(Exception ee) {
+		} catch (Exception ee) {
 			ee.printStackTrace();
 		}
 		return false;
-		
+
 	}
 
 	/**
@@ -438,7 +458,7 @@ public class GitUtil {
 					}
 				};
 				TrustManager[] trustAllCerts = new TrustManager[] { a };
-				
+
 				try {
 					SSLContext sc = SSLContext.getInstance("SSL");
 					sc.init(null, trustAllCerts, new java.security.SecureRandom());
@@ -466,6 +486,7 @@ public class GitUtil {
 
 	/**
 	 * check local directory is git repository.
+	 * 
 	 * @param sDirectory
 	 * @return
 	 */
@@ -490,16 +511,16 @@ public class GitUtil {
 	public static void main(String ar[]) {
 		try {
 			GitUtil aGitUtil = new GitUtil(null, "/tmp/asdf/local");
-			if( !aGitUtil.checkLocalRepository() ) {
+			if (!aGitUtil.checkLocalRepository()) {
 				aGitUtil.createLocalRepository();
 			}
 			aGitUtil.commit("asdf");
-			
-		}catch(Exception ee) {
-			
+
+		} catch (Exception ee) {
+
 		}
 	}
-	
+
 	/**
 	 * Command Mode for test .
 	 * 
@@ -511,18 +532,17 @@ public class GitUtil {
 	 */
 	public static void main2(String ar[]) {
 		GitUtil aGitUtil;
-		
+
 		String sRemoteUrl = ar[0];
 		String sLocalDirectory = ar[1];
 		String sUserName = ar[2];
 		String sUserPassword = ar[3];
 
-		
-		
 		try {
 			aGitUtil = new GitUtil(sRemoteUrl, sLocalDirectory);
 
-			System.out.println("Remote repository exists ? " + aGitUtil.checkRemoteRepository(sUserName, sUserPassword));
+			System.out
+					.println("Remote repository exists ? " + aGitUtil.checkRemoteRepository(sUserName, sUserPassword));
 			System.out.println("Local repository exists ? " + aGitUtil.checkLocalRepository());
 			if (aGitUtil.checkRemoteRepository(sUserName, sUserPassword) && !aGitUtil.checkLocalRepository()) {
 				System.out.println("try to clone remote repository if local repository is not exists \n");
@@ -541,7 +561,7 @@ public class GitUtil {
 				if (aAllBranches != null) {
 					System.out.println("\nList All Local Branch Name\n--------------------------------");
 					for (Ref aBranch : aAllBranches) {
-						System.out.println("branch : " +  aBranch.getName());
+						System.out.println("branch : " + aBranch.getName());
 					}
 					System.out.println("");
 				}
@@ -550,7 +570,8 @@ public class GitUtil {
 				if (aAllTags != null) {
 					System.out.println("\nList All Local Tags Name\n--------------------------------");
 					for (Ref aTag : aAllTags) {
-						System.out.println("Tag : " + aTag.getName() +"("+aGitUtil.getTagDate(aTag,"yyyy-MM-dd HH:mm:ss")+" created!)" );
+						System.out.println("Tag : " + aTag.getName() + "("
+								+ aGitUtil.getTagDate(aTag, "yyyy-MM-dd HH:mm:ss") + " created!)");
 						System.out.println("Commit messages\n==\n" + aGitUtil.getCommitMessageByTagName(aTag) + "\n");
 					}
 					System.out.println("");
