@@ -20,7 +20,7 @@
 ## lib for Git utility
    slf4j-api-1.7.22.jar    
    jsch-0.1.54.jar    
-   org.eclipse.jgit-4.5.0.201609210915-r.jar
+   org.eclipse.jgit-4.5.7.201904151645-r
         
 ## lib for itext (digital sinature) pdf utility
    jar file in directory "itext"    

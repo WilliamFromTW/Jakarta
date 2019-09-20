@@ -53,6 +53,18 @@ public class GitUtil {
 		}
 	}
 
+	
+	public  boolean createLocalRepository() {
+		
+		try {
+			git =  Git.init().setDirectory( new File(sLocalDirectory)).call();
+			return true;
+		} catch (IllegalStateException | GitAPIException e) {
+			e.printStackTrace();
+		}
+		return false;
+		
+	}
 
 	public static String getGitShortName(String sName){
 		return Repository.shortenRefName(sName);
@@ -475,6 +487,19 @@ public class GitUtil {
 		}
 	}
 
+	public static void main(String ar[]) {
+		try {
+			GitUtil aGitUtil = new GitUtil(null, "/tmp/asdf/local");
+			if( !aGitUtil.checkLocalRepository() ) {
+				aGitUtil.createLocalRepository();
+			}
+			aGitUtil.commit("asdf");
+			
+		}catch(Exception ee) {
+			
+		}
+	}
+	
 	/**
 	 * Command Mode for test .
 	 * 
@@ -484,7 +509,7 @@ public class GitUtil {
 	 * 
 	 * @param ar
 	 */
-	public static void main(String ar[]) {
+	public static void main2(String ar[]) {
 		GitUtil aGitUtil;
 		
 		String sRemoteUrl = ar[0];
