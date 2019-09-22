@@ -16,15 +16,29 @@ import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
+import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.errors.CorruptObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.transport.TransportHttp;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 public class GitUtil {
 
@@ -36,6 +50,9 @@ public class GitUtil {
 	private GitUtil() {
 	}
 
+	public Git getGit() {
+		return git;
+	}
 	public void close() {
 		if (git != null)
 			git.close();
@@ -272,8 +289,7 @@ public class GitUtil {
 	 * get Tag create date
 	 * 
 	 * @param aTag
-	 * @param sFormat
-	 *            SimpleDateFormat ex: "yyyyMMddHHmm"
+	 * @param sFormat SimpleDateFormat ex: "yyyyMMddHHmm"
 	 * @return format yyyyMMddHHmm
 	 */
 	public String getTagDate(Ref aTag, String sFormat) {
@@ -301,8 +317,7 @@ public class GitUtil {
 	 * get Commit date
 	 * 
 	 * @param aTag
-	 * @param sFormat
-	 *            SimpleDateFormat ex: "yyyyMMddHHmm"
+	 * @param sFormat SimpleDateFormat ex: "yyyyMMddHHmm"
 	 * @return format yyyyMMddHHmm
 	 */
 	public String getCommitDate(Ref aTag, String sFormat) {
@@ -381,8 +396,7 @@ public class GitUtil {
 
 	/**
 	 * 
-	 * @param sRemote
-	 *            default is origin
+	 * @param sRemote   default is origin
 	 * @param sUserName
 	 * @param sPasswd
 	 * @return
@@ -483,6 +497,7 @@ public class GitUtil {
 			return false;
 		}
 	}
+	
 
 	/**
 	 * check local directory is git repository.
@@ -508,13 +523,42 @@ public class GitUtil {
 		}
 	}
 
+	/**
+	 * diff example
+	 * @param ar
+	 */
 	public static void main(String ar[]) {
 		try {
-			GitUtil aGitUtil = new GitUtil(null, "/tmp/asdf/local");
+			GitUtil aGitUtil = new GitUtil(null, "/Users/william/git/inmethodgitnotetaking");
 			if (!aGitUtil.checkLocalRepository()) {
-				aGitUtil.createLocalRepository();
+				System.out.println("no local repository found!");
+				// aGitUtil.createLocalRepository();
+			} else {
+				System.out.println("local repository found!");
+//				aGitUtil.commitHistory();
+				List<RevCommit> aCommitList = aGitUtil.getLocalCommitIdList();
+				
+				if( aCommitList.size()>=2) {
+				  String sCurrentCommitID=aCommitList.get(0).getName();
+				  String sPreviousCommitID=aCommitList.get(1).getName();
+				
+					
+					System.out.println("######\nCommit ID=" + aCommitList.get(0).getName() + ",date=" + aCommitList.get(0).getCommitTime());
+					List<String> aFileList = aGitUtil.getCommitFileList(aCommitList.get(0));
+					for (String sFilePath : aFileList) {
+						System.out.println(sFilePath);
+						List<DiffEntry> diff= aGitUtil.getDiff(sFilePath, sCurrentCommitID, sPreviousCommitID);
+						for (DiffEntry entry : diff) {
+							
+		                    System.out.println("Entry : Change Type = " +  entry.getChangeType() + ", from: " + entry.getOldId() + ", to: " + entry.getNewId());
+		                    try (DiffFormatter formatter = new DiffFormatter(System.out)) {
+		                        formatter.setRepository( aGitUtil.getGit().getRepository());
+		                        formatter.format(entry);
+		                    }
+		                }
+					}
+				}
 			}
-			aGitUtil.commit("asdf");
 
 		} catch (Exception ee) {
 
@@ -585,4 +629,125 @@ public class GitUtil {
 		}
 	}
 
+	/**
+	 * get all local commit log
+	 * 
+	 * @return
+	 */
+	public ArrayList<RevCommit> getLocalCommitIdList() {
+		ArrayList<RevCommit> aList = new ArrayList<RevCommit>();
+		try {
+			Iterable<RevCommit> logs = git.log().call();
+
+			for (RevCommit commit : logs) {
+				String commitID = commit.getName();
+				// System.out.println("################" + commit.getCommitTime() + "," +
+				// commit.getFullMessage());
+				if (commitID != null && !commitID.isEmpty()) {
+					aList.add(commit);
+				}
+			}
+		} catch (Exception ee) {
+
+		}
+		return aList;
+	}
+
+	public ArrayList<String> getCommitFileList(RevCommit commit) {
+		ArrayList<String> aList = new ArrayList<String>();
+		try {
+			if (commit.getName() != null && !commit.getName().isEmpty()) {
+				LogCommand logs2 = git.log().all();
+				Repository repository = logs2.getRepository();
+				TreeWalk tw = new TreeWalk(repository);
+				tw.setRecursive(true);
+				RevCommit commitToCheck = commit;
+				tw.addTree(commitToCheck.getTree());
+				for (RevCommit parent : commitToCheck.getParents()) {
+					tw.addTree(parent.getTree());
+				}
+				while (tw.next()) {
+					int similarParents = 0;
+					for (int i = 1; i < tw.getTreeCount(); i++)
+						if (tw.getFileMode(i) == tw.getFileMode(0) && tw.getObjectId(0).equals(tw.getObjectId(i)))
+							similarParents++;
+
+					if (similarParents == 0) {
+						aList.add(tw.getPathString());
+						// System.out.println("File names: " + tw.getPathString());
+					}
+				}
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return aList;
+	}
+
+	public void commitHistory()
+			throws NoHeadException, GitAPIException, IncorrectObjectTypeException, CorruptObjectException, IOException {
+		Iterable<RevCommit> logs = git.log().call();
+		int k = 0;
+		for (RevCommit commit : logs) {
+			String commitID = commit.getName();
+			System.out.println("################" + commit.getCommitTime() + "," + commit.getFullMessage());
+			if (commitID != null && !commitID.isEmpty()) {
+				LogCommand logs2 = git.log().all();
+				Repository repository = logs2.getRepository();
+				TreeWalk tw = new TreeWalk(repository);
+				tw.setRecursive(true);
+				RevCommit commitToCheck = commit;
+				tw.addTree(commitToCheck.getTree());
+				for (RevCommit parent : commitToCheck.getParents()) {
+					tw.addTree(parent.getTree());
+				}
+				while (tw.next()) {
+					int similarParents = 0;
+					for (int i = 1; i < tw.getTreeCount(); i++)
+						if (tw.getFileMode(i) == tw.getFileMode(0) && tw.getObjectId(0).equals(tw.getObjectId(i)))
+							similarParents++;
+					if (similarParents == 0)
+						System.out.println("File names: " + tw.getPathString());
+				}
+			}
+		}
+	}
+
+	private AbstractTreeIterator prepareTreeParser(String objectId) throws IOException {
+		// from the commit we can build the tree which allows us to construct the
+		// TreeParser
+		// noinspection Duplicates
+
+		try (RevWalk walk = new RevWalk(git.getRepository())) {
+			RevCommit commit = walk.parseCommit(ObjectId.fromString(objectId));
+			RevTree tree = walk.parseTree(commit.getTree().getId());
+
+			CanonicalTreeParser treeParser = new CanonicalTreeParser();
+			try (ObjectReader reader = git.getRepository().newObjectReader()) {
+				treeParser.reset(reader, tree.getId());
+			}
+
+			walk.dispose();
+
+			return treeParser;
+		}
+	}
+
+	/**
+	 * 
+	 * @param sCurrentCommitID
+	 * @param sPreviousCommitID
+	 * @return
+	 */
+	public List<DiffEntry> getDiff(String sFilePath, String sCurrentCommitID, String sPreviousCommitID) {
+		try {
+			return git.diff().setOldTree(prepareTreeParser(sPreviousCommitID))
+					.setNewTree(prepareTreeParser(sCurrentCommitID)).setPathFilter(PathFilter.create(sFilePath)).call();
+		} catch (GitAPIException | IOException e) {
+
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
