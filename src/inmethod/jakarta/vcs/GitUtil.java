@@ -107,6 +107,7 @@ public class GitUtil {
 			if (git == null) {
 				aLocalGitFile = new File(sLocalDirectory + "/.git");
 				git = Git.open(aLocalGitFile);
+				
 			}
 			return true;
 		} catch (Exception e) {
@@ -394,6 +395,10 @@ public class GitUtil {
 		return false;
 	}
 
+	public boolean push( String sUserName, String sPasswd) {
+		return push("origin",sUserName,sPasswd);
+	}
+	
 	/**
 	 * 
 	 * @param sRemote   default is origin
@@ -458,6 +463,18 @@ public class GitUtil {
 	 * @return
 	 */
 	public boolean pull(String sUserName, String sPasswd) {
+		return pull(this.getDefaultBranch(),sUserName,sPasswd);
+	}
+	
+	/**
+	 * update must apply user id and password.
+	 * 
+	 * @param sBranch
+	 * @param sUserName
+	 * @param sPasswd
+	 * @return
+	 */
+	public boolean pull(String sBranch,String sUserName, String sPasswd) {
 		try {
 			if (sUserName != null && sPasswd != null) {
 				X509TrustManager a = new X509TrustManager() {
@@ -490,7 +507,7 @@ public class GitUtil {
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
 				git.pull().setCredentialsProvider(cp).setRemoteBranchName(getDefaultBranch()).call();
 			} else
-				git.pull().setRemoteBranchName(getDefaultBranch()).call();
+				git.pull().setRemoteBranchName(sBranch).call();
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -527,7 +544,7 @@ public class GitUtil {
 	 * diff example
 	 * @param ar
 	 */
-	public static void main(String ar[]) {
+	public static void main2(String ar[]) {
 		try {
 			GitUtil aGitUtil = new GitUtil(null, "/Users/william/git/inmethodgitnotetaking");
 			if (!aGitUtil.checkLocalRepository()) {
@@ -574,13 +591,18 @@ public class GitUtil {
 	 * 
 	 * @param ar
 	 */
-	public static void main2(String ar[]) {
+	public static void main(String ar[]) {
 		GitUtil aGitUtil;
-
+/*
 		String sRemoteUrl = ar[0];
 		String sLocalDirectory = ar[1];
 		String sUserName = ar[2];
 		String sUserPassword = ar[3];
+*/
+		String sRemoteUrl = "https://github.com/WilliamFromTW/test.git";
+		String sLocalDirectory = "/Users/william/git/test";
+		String sUserName = "WilliamFromTW";
+		String sUserPassword = "!Lois0023";
 
 		try {
 			aGitUtil = new GitUtil(sRemoteUrl, sLocalDirectory);
@@ -596,7 +618,7 @@ public class GitUtil {
 					System.out.println("clone failed!");
 			} else if (aGitUtil.checkRemoteRepository(sUserName, sUserPassword) && aGitUtil.checkLocalRepository()) {
 				System.out.println("pull branch = " + aGitUtil.getDefaultBranch() + " , status : "
-						+ aGitUtil.pull(sUserName, sUserPassword));
+						+ aGitUtil.pull(aGitUtil.getDefaultBranch(),sUserName, sUserPassword));
 			}
 
 			System.out.println("Default branch : " + aGitUtil.getDefaultBranch());
