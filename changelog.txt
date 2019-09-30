@@ -7,6 +7,8 @@ v3.1p4
 6. add commit author name and email - 2019/09/15
 7. add createLocalRepository method in GitUtil - 2019/09/20
 8. add some methods in GitUtil - 2019/09/28
+9. get all remote branch in GitUtil - 2019/09/30
+10. checkout local branch in GitUtil - 2019/09/30
 
 v3.1p2 - 2019/05/28
 --

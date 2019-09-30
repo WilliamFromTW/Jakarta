@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -21,6 +23,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.CorruptObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -32,8 +36,7 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
-import org.eclipse.jgit.transport.Transport;
-import org.eclipse.jgit.transport.TransportHttp;
+import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
@@ -46,6 +49,7 @@ public class GitUtil {
 	private String sRemoteUrl;
 	private String sLocalDirectory;
 	private File aLocalGitFile = null;
+	private String sRemoteDefaultBranch = "master";
 
 	private GitUtil() {
 	}
@@ -53,6 +57,7 @@ public class GitUtil {
 	public Git getGit() {
 		return git;
 	}
+
 	public void close() {
 		if (git != null)
 			git.close();
@@ -99,15 +104,50 @@ public class GitUtil {
 	 * @return
 	 */
 	public boolean clone(String sUserName, String sPasswd) {
-		CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
 
 		try {
-			Git.cloneRepository().setURI(sRemoteUrl).setDirectory(new File(sLocalDirectory)).setCredentialsProvider(cp)
-					.setCloneAllBranches(true).call();
+			if (sUserName != null && sPasswd != null) {
+
+				X509TrustManager a = new X509TrustManager() {
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+
+					public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+
+					public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+				};
+				TrustManager[] trustAllCerts = new TrustManager[] { a };
+				// Install the all-trusting trust manager
+				try {
+					SSLContext sc = SSLContext.getInstance("SSL");
+					sc.init(null, trustAllCerts, new java.security.SecureRandom());
+					HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+				} catch (GeneralSecurityException e) {
+					// e.printStackTrace();
+				}
+				HostnameVerifier allHostsValid = new HostnameVerifier() {
+					public boolean verify(String hostname, SSLSession session) {
+						return true;
+					}
+				};
+				HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
+
+				Git.cloneRepository().setURI(sRemoteUrl).setDirectory(new File(sLocalDirectory))
+						.setCredentialsProvider(cp).setCloneAllBranches(true).call();
+			} else {
+				Git.cloneRepository().setURI(sRemoteUrl).setDirectory(new File(sLocalDirectory))
+						.setCloneAllBranches(true).call();
+
+			}
 			if (git == null) {
 				aLocalGitFile = new File(sLocalDirectory + "/.git");
 				git = Git.open(aLocalGitFile);
-				
+
 			}
 			return true;
 		} catch (Exception e) {
@@ -121,7 +161,7 @@ public class GitUtil {
 	 * 
 	 * @return
 	 */
-	public String getDefaultBranch() {
+	public String getLocalDefaultBranch() {
 		try {
 			// System.out.println("default branch is
 			// "+git.getRepository().getBranch());
@@ -344,12 +384,15 @@ public class GitUtil {
 	 * checkout repository by a tag name or branch name (compatible for short name
 	 * or long name)
 	 * 
-	 * @param sTagName
+	 * @param sBranchName
 	 * @return
 	 */
-	public boolean checkout(String sTagName) {
+	public boolean checkout(String sBranchName) {
 		try {
-			Git.open(aLocalGitFile).checkout().setName(sTagName).call();
+			System.out.println("delete local branch status = "
+					+ git.branchDelete().setBranchNames(sBranchName).setForce(true).call());
+			git.checkout().setCreateBranch(true).setForce(true).setName(sBranchName)
+					.setStartPoint("origin/" + sBranchName).call();
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -395,13 +438,13 @@ public class GitUtil {
 		return false;
 	}
 
-	public boolean push( String sUserName, String sPasswd) {
-		return push("origin",sUserName,sPasswd);
+	public boolean push(String sUserName, String sPasswd) {
+		return push(null, sUserName, sPasswd);
 	}
-	
+
 	/**
 	 * 
-	 * @param sRemote   default is origin
+	 * @param sRemoteUrl
 	 * @param sUserName
 	 * @param sPasswd
 	 * @return
@@ -437,6 +480,9 @@ public class GitUtil {
 				HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
 				git.push().setCredentialsProvider(cp).setRemote(sRemote).call();
+			} else {
+				git.push().setRemote(sRemote).call();
+
 			}
 			return true;
 		} catch (Exception ee) {
@@ -455,6 +501,14 @@ public class GitUtil {
 		return pull(null, null);
 	}
 
+	public String getRemoteDefaultBranch() {
+		return sRemoteDefaultBranch;
+	}
+
+	public void setRemoteDefaultBranch(String param) {
+		sRemoteDefaultBranch = param;
+	}
+
 	/**
 	 * update must apply user id and password.
 	 * 
@@ -463,9 +517,9 @@ public class GitUtil {
 	 * @return
 	 */
 	public boolean pull(String sUserName, String sPasswd) {
-		return pull(this.getDefaultBranch(),sUserName,sPasswd);
+		return pull(getRemoteDefaultBranch(), sUserName, sPasswd);
 	}
-	
+
 	/**
 	 * update must apply user id and password.
 	 * 
@@ -474,7 +528,7 @@ public class GitUtil {
 	 * @param sPasswd
 	 * @return
 	 */
-	public boolean pull(String sBranch,String sUserName, String sPasswd) {
+	public boolean pull(String sBranch, String sUserName, String sPasswd) {
 		try {
 			if (sUserName != null && sPasswd != null) {
 				X509TrustManager a = new X509TrustManager() {
@@ -505,7 +559,7 @@ public class GitUtil {
 				HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
-				git.pull().setCredentialsProvider(cp).setRemoteBranchName(getDefaultBranch()).call();
+				git.pull().setCredentialsProvider(cp).setRemoteBranchName(sBranch).call();
 			} else
 				git.pull().setRemoteBranchName(sBranch).call();
 			return true;
@@ -514,7 +568,6 @@ public class GitUtil {
 			return false;
 		}
 	}
-	
 
 	/**
 	 * check local directory is git repository.
@@ -542,6 +595,7 @@ public class GitUtil {
 
 	/**
 	 * diff example
+	 * 
 	 * @param ar
 	 */
 	public static void main2(String ar[]) {
@@ -554,25 +608,38 @@ public class GitUtil {
 				System.out.println("local repository found!");
 //				aGitUtil.commitHistory();
 				List<RevCommit> aCommitList = aGitUtil.getLocalCommitIdList();
-				
-				if( aCommitList.size()>=2) {
-				  String sCurrentCommitID=aCommitList.get(0).getName();
-				  String sPreviousCommitID=aCommitList.get(1).getName();
-				
-					
-					System.out.println("######\nCommit ID=" + aCommitList.get(0).getName() + ",date=" + aCommitList.get(0).getCommitTime());
+
+				if (aCommitList.size() >= 2) {
+					String sCurrentCommitID = aCommitList.get(0).getName();
+					String sPreviousCommitID = aCommitList.get(1).getName();
+
+					System.out.println("######\nCommit ID=" + aCommitList.get(0).getName() + ",date="
+							+ aCommitList.get(0).getCommitTime());
 					List<String> aFileList = aGitUtil.getCommitFileList(aCommitList.get(0));
 					for (String sFilePath : aFileList) {
 						System.out.println(sFilePath);
-						List<DiffEntry> diff= aGitUtil.getDiff(sFilePath, sCurrentCommitID, sPreviousCommitID);
+						List<DiffEntry> diff = aGitUtil.getDiff(sFilePath, sCurrentCommitID, sPreviousCommitID);
 						for (DiffEntry entry : diff) {
-							
-		                    System.out.println("Entry : Change Type = " +  entry.getChangeType() + ", from: " + entry.getOldId() + ", to: " + entry.getNewId());
-		                    try (DiffFormatter formatter = new DiffFormatter(System.out)) {
-		                        formatter.setRepository( aGitUtil.getGit().getRepository());
-		                        formatter.format(entry);
-		                    }
-		                }
+
+							System.out.println("Entry : Change Type = " + entry.getChangeType() + ", from: "
+									+ entry.getOldId() + ", to: " + entry.getNewId());
+							try (DiffFormatter formatter = new DiffFormatter(System.out)) {
+								formatter.setRepository(aGitUtil.getGit().getRepository());
+								formatter.setContext(0);
+								formatter.setDiffComparator(RawTextComparator.WS_IGNORE_TRAILING);
+								formatter.format(entry);
+								int linesDeleted = 0;
+								int linesAdded = 0;
+
+								for (Edit edit : formatter.toFileHeader(entry).toEditList()) {
+									linesDeleted += edit.getEndA() - edit.getBeginA();
+									linesAdded += edit.getEndB() - edit.getBeginB();
+									System.out.println(edit.toString());
+								}
+								System.out.println("linew Deleted # = " + linesDeleted);
+								System.out.println("linew added # = " + linesAdded);
+							}
+						}
 					}
 				}
 			}
@@ -593,13 +660,11 @@ public class GitUtil {
 	 */
 	public static void main(String ar[]) {
 		GitUtil aGitUtil;
-/*
-		String sRemoteUrl = ar[0];
-		String sLocalDirectory = ar[1];
-		String sUserName = ar[2];
-		String sUserPassword = ar[3];
-*/
-		String sRemoteUrl = "https://github.com/WilliamFromTW/test.git";
+		/*
+		 * String sRemoteUrl = ar[0]; String sLocalDirectory = ar[1]; String sUserName =
+		 * ar[2]; String sUserPassword = ar[3];
+		 */
+		String sRemoteUrl = "https://bitbucket.org/WilliamFromTW/test.git";
 		String sLocalDirectory = "/Users/william/git/test";
 		String sUserName = "WilliamFromTW";
 		String sUserPassword = "!Lois0023";
@@ -617,11 +682,13 @@ public class GitUtil {
 				else
 					System.out.println("clone failed!");
 			} else if (aGitUtil.checkRemoteRepository(sUserName, sUserPassword) && aGitUtil.checkLocalRepository()) {
-				System.out.println("pull branch = " + aGitUtil.getDefaultBranch() + " , status : "
-						+ aGitUtil.pull(aGitUtil.getDefaultBranch(),sUserName, sUserPassword));
+				// System.out.println("pull branch = " + aGitUtil.getRemoteDefaultBranch() + " ,
+				// status : "
+				// + aGitUtil.pull(aGitUtil.getRemoteDefaultBranch(), sUserName,
+				// sUserPassword));
 			}
 
-			System.out.println("Default branch : " + aGitUtil.getDefaultBranch());
+			// System.out.println("Default branch : " + aGitUtil.getRemoteDefaultBranch());
 			if (aGitUtil.checkLocalRepository()) {
 				List<Ref> aAllBranches = aGitUtil.getBranches();
 				if (aAllBranches != null) {
@@ -631,7 +698,7 @@ public class GitUtil {
 					}
 					System.out.println("");
 				}
-				System.out.println("Switch local branch to master: " + aGitUtil.checkout("master"));
+				System.out.println("Switch local branch master = " + aGitUtil.checkout("master"));
 				List<Ref> aAllTags = aGitUtil.getLocalTags();
 				if (aAllTags != null) {
 					System.out.println("\nList All Local Tags Name\n--------------------------------");
@@ -705,6 +772,51 @@ public class GitUtil {
 			ex.printStackTrace();
 		}
 		return aList;
+	}
+
+	public List<String> fetchGitBranches(String sUserName, String sPassword) {
+
+		Collection<Ref> refs;
+		List<String> branches = new ArrayList<String>();
+		try {
+			X509TrustManager a = new X509TrustManager() {
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
+
+				public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+				}
+
+				public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+				}
+			};
+			TrustManager[] trustAllCerts = new TrustManager[] { a };
+
+			try {
+				SSLContext sc = SSLContext.getInstance("SSL");
+				sc.init(null, trustAllCerts, new java.security.SecureRandom());
+				HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			} catch (GeneralSecurityException e) {
+				// e.printStackTrace();
+			}
+			HostnameVerifier allHostsValid = new HostnameVerifier() {
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
+			};
+			HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+			CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPassword);
+			refs = Git.lsRemoteRepository().setHeads(true).setRemote(sRemoteUrl).setCredentialsProvider(cp).call();
+			for (Ref ref : refs) {
+				branches.add(ref.getName().substring(ref.getName().lastIndexOf("/") + 1, ref.getName().length()));
+			}
+			Collections.sort(branches);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return branches;
 	}
 
 	public void commitHistory()
