@@ -387,17 +387,11 @@ public class GitUtil {
 	 * @param sBranchName
 	 * @return
 	 */
-	public boolean checkout(String sBranchName) {
-		try {
-			System.out.println("delete local branch status = "
-					+ git.branchDelete().setBranchNames(sBranchName).setForce(true).call());
+	public boolean checkout(String sBranchName) throws Exception{
+			git.branchDelete().setBranchNames(sBranchName).setForce(true).call();
 			git.checkout().setCreateBranch(true).setForce(true).setName(sBranchName)
 					.setStartPoint("origin/" + sBranchName).call();
 			return true;
-		} catch (Exception e) {
-			return false;
-		}
-
 	}
 
 	/**
