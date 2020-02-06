@@ -2,21 +2,28 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
-	<classpathentry kind="lib" path="lib/poi-3.15.jar"/>
-	<classpathentry kind="lib" path="lib/poi-ooxml-3.15.jar"/>
-	<classpathentry kind="lib" path="lib/xmlbeans-2.6.0.jar"/>
-	<classpathentry kind="lib" path="lib/curvesapi-1.04.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections4-4.1.jar"/>
-	<classpathentry kind="lib" path="lib/poi-ooxml-schemas-3.15.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.7.22.jar"/>
-	<classpathentry kind="lib" path="lib/jsch-0.1.54.jar"/>
-	<classpathentry kind="lib" path="lib/commons-net-3.5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v8.5"/>
-	<classpathentry kind="lib" path="lib/InMethodTools-2.03-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/xbean.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections4-4.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-digester3-3.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="lib/commons-net-3.5.jar"/>
+	<classpathentry kind="lib" path="lib/curvesapi-1.04.jar"/>
+	<classpathentry kind="lib" path="lib/InMethodTools-2.03-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/jsch-0.1.54.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jgit-4.5.7.201904151645-r.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.17.jar"/>
+	<classpathentry kind="lib" path="lib/poi-ooxml-3.17.jar"/>
+	<classpathentry kind="lib" path="lib/poi-ooxml-schemas-3.17.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.22.jar"/>
+	<classpathentry kind="lib" path="lib/xbean.jar"/>
+	<classpathentry kind="lib" path="lib/xmlbeans-2.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/jasper_report/Arial Unicode.jar"/>
+	<classpathentry kind="lib" path="lib/jasper_report/commons-collections-3.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/jasper_report/commons-digester-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jasper_report/jasperreports-6.7.0.jar"/>
+	<classpathentry kind="lib" path="lib/jasper_report/spring-beans-5.1.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/jasper_report/spring-core-5.1.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/itext/bcpkix-jdk15on-1.61.jar"/>
 	<classpathentry kind="lib" path="lib/itext/bcprov-jdk15on-1.61.jar"/>
 	<classpathentry kind="lib" path="lib/itext/itext-2.1.7.jar"/>
@@ -29,13 +36,5 @@
 	<classpathentry kind="lib" path="lib/itext/itext7-sign-7.1.5.jar"/>
 	<classpathentry kind="lib" path="lib/itext/itextasian-1.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/itext/itextpdf-5.5.13.jar"/>
-	<classpathentry kind="lib" path="lib/jasper_report/Arial Unicode.jar"/>
-	<classpathentry kind="lib" path="lib/jasper_report/commons-collections-3.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/jasper_report/commons-digester-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/jasper_report/jasperreports-6.7.0.jar"/>
-	<classpathentry kind="lib" path="lib/jasper_report/spring-beans-5.1.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/jasper_report/spring-core-5.1.5.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/oracle_driver/ojdbc6.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.jgit-4.5.7.201904151645-r.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

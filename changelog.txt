@@ -9,7 +9,9 @@ v3.1p4
 8. add some methods in GitUtil - 2019/09/28
 9. get all remote branch in GitUtil - 2019/09/30
 10. checkout local branch in GitUtil - 2019/09/30
-
+11. CreateXLSX performance tuning - 2020/02/06
+    poi update to 3.17
+    
 v3.1p2 - 2019/05/28
 --
 1. jgit library downgrade to version 4.5 (compatible with android p)

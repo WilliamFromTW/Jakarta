@@ -9,9 +9,9 @@
    and copy test files  in directory "test_files" to "tmp" directory.
    
 ## lib for create/read excel
-   poi-ooxml-3.15.jar    
-   poi-ooxml-schemas-3.15.jar   
-   poi-3.15.jar    
+   poi-ooxml-3.17.jar    
+   poi-ooxml-schemas-3.17.jar   
+   poi-3.17.jar    
    commons-net-1.2.2.jar    
    commons-collections4-4.1.jar    
    commons-codec-1.10.jar    

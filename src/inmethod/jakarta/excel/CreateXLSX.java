@@ -10,11 +10,20 @@ import java.sql.ResultSetMetaData;
 import java.util.Vector;
 
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFDrawing;
+import org.apache.poi.xssf.streaming.SXSSFPicture;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
@@ -42,11 +51,11 @@ public class CreateXLSX  implements ICreateExcel {
 	private String sIntCurrencyFormat = "#,##0";
 	
 
-	private XSSFWorkbook workBook;
-	private XSSFSheet sheet;
-	private XSSFRow headerRow = null;
-	private XSSFCell headerCell = null;
-	private XSSFDrawing patriarch = null;
+	private SXSSFWorkbook workBook;
+	private SXSSFSheet sheet;
+	private SXSSFRow headerRow = null;
+	private SXSSFCell headerCell = null;
+	private SXSSFDrawing patriarch = null;
 	
 	
 	private CreateXLSX() {
@@ -76,10 +85,11 @@ public class CreateXLSX  implements ICreateExcel {
 			// create a new workbook
 			if (aInput == null){
 				//System.out.println("no input template");
-				workBook = new XSSFWorkbook();
+				workBook = new SXSSFWorkbook();
+			
 			}	
 			else {
-				workBook = new XSSFWorkbook( aInput);
+				workBook = new SXSSFWorkbook(new XSSFWorkbook( aInput));
 			}
 			bolPrintResultSetHeader = false;
 		} catch (Exception ex) {
@@ -169,11 +179,11 @@ public class CreateXLSX  implements ICreateExcel {
 
 			sheet.addMergedRegion(new CellRangeAddress(iRowBegin, iRowEnd, iColBegin, iColEnd));
 			headerCell = headerRow.createCell((short) 0);
-			XSSFFont font = getCurrentWorkBook().createFont();
+			Font font = getCurrentWorkBook().createFont();
 			font.setFontName("新細明體");
 			headerCell.setCellValue(new XSSFRichTextString(sHeaderMessage));
 			// create a style for the header cell
-			XSSFCellStyle headerStyle = workBook.createCellStyle();
+			CellStyle headerStyle = workBook.createCellStyle();
 			headerStyle.setFont(font);
 			headerStyle.setAlignment(HorizontalAlignment.CENTER);
 			headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -186,14 +196,14 @@ public class CreateXLSX  implements ICreateExcel {
 	/**
 	 * Get current workbook.
 	 */
-	public XSSFWorkbook getCurrentWorkBook() {
+	public SXSSFWorkbook getCurrentWorkBook() {
 		return workBook;
 	}
 
 	/**
 	 * Get current sheet.
 	 */
-	public XSSFSheet getCurrentSheet() {
+	public SXSSFSheet getCurrentSheet() {
 		return sheet;
 	}
 
@@ -363,7 +373,7 @@ public class CreateXLSX  implements ICreateExcel {
 	/**
 	 * Get next row .
 	 */
-	public XSSFRow getNextRow() {
+	public SXSSFRow getNextRow() {
 		return sheet.createRow(getNextRowID());
 
 	}
@@ -376,16 +386,16 @@ public class CreateXLSX  implements ICreateExcel {
 	 * @param aVector
 	 */
 	public void setValue(short x, short y, Vector aVector) {
-		XSSFRow aRow = sheet.getRow(x);
-		XSSFCell aCell = null;
+		SXSSFRow aRow = sheet.getRow(x);
+		SXSSFCell aCell = null;
 		if (sheet.getRow(x) == null)
 			aRow = sheet.createRow(x);
 		aCell = aRow.getCell(y);
 		if (aCell == null)
 			aCell = aRow.createCell(y);
-		XSSFFont font = getCurrentWorkBook().createFont();
+		Font font = getCurrentWorkBook().createFont();
 		font.setFontName("新細明體");
-		XSSFCellStyle style = getCurrentWorkBook().createCellStyle();
+		CellStyle style = getCurrentWorkBook().createCellStyle();
 		style.setFont(font);			
 		
 		
@@ -417,15 +427,15 @@ public class CreateXLSX  implements ICreateExcel {
 			setValue(x, y, sValue);
 			return;
 		}
-		XSSFRow aRow = sheet.getRow(x);
-		XSSFCell aCell = null;
+		SXSSFRow aRow = sheet.getRow(x);
+		SXSSFCell aCell = null;
 		if (sheet.getRow(x) == null)
 			aRow = sheet.createRow(x);
 		aCell = aRow.getCell(y);
 		if (aCell == null)
 			aCell = aRow.createCell(y);
 		
-		XSSFCellStyle cs = getCurrentWorkBook().createCellStyle();
+		CellStyle cs = getCurrentWorkBook().createCellStyle();
 		cs.setWrapText(true);
 		aRow.setHeight((short) 0x349);
 		aCell.setCellType(CellType.STRING);
@@ -443,11 +453,11 @@ public class CreateXLSX  implements ICreateExcel {
 	 * @param sValue
 	 */
 	public void setValue(short x, short y, String sValue) {
-		XSSFRow aRow = sheet.getRow(x);
-		XSSFCell aCell = null;
-		XSSFFont font = getCurrentWorkBook().createFont();
+		SXSSFRow aRow = sheet.getRow(x);
+		SXSSFCell aCell = null;
+		Font font = getCurrentWorkBook().createFont();
 		font.setFontName("新細明體");
-		XSSFCellStyle style = getCurrentWorkBook().createCellStyle();
+		CellStyle style = getCurrentWorkBook().createCellStyle();
 		style.setFont(font);			
 
 		if (sheet.getRow(x) == null)
@@ -474,15 +484,15 @@ public class CreateXLSX  implements ICreateExcel {
 	 * @param dValue
 	 */
 	public void setValue(short x, short y, Integer dValue) {
-		XSSFRow aRow = sheet.getRow(x);
-		XSSFCell aCell = null;
+		SXSSFRow aRow = sheet.getRow(x);
+		SXSSFCell aCell = null;
 		if (sheet.getRow(x) == null)
 			aRow = sheet.createRow(x);
 		aCell = aRow.getCell(y);
 		if (aCell == null)
 			aCell = aRow.createCell(y);
-		XSSFDataFormat df = getCurrentWorkBook().createDataFormat();
-		XSSFCellStyle cs = getCurrentWorkBook().createCellStyle();
+		DataFormat df = getCurrentWorkBook().createDataFormat();
+		CellStyle cs = getCurrentWorkBook().createCellStyle();
 		cs.setDataFormat(df.getFormat(sIntCurrencyFormat));
 	    if(getAutoWrapText()) {
 	      cs.setWrapText(true);
@@ -504,15 +514,15 @@ public class CreateXLSX  implements ICreateExcel {
 	 * @param dValue
 	 */
 	public void setValue(short x, short y, Double dValue) {
-		XSSFRow aRow = sheet.getRow(x);
-		XSSFCell aCell = null;
+		SXSSFRow aRow = sheet.getRow(x);
+		SXSSFCell aCell = null;
 		if (sheet.getRow(x) == null)
 			aRow = sheet.createRow(x);
 		aCell = aRow.getCell(y);
 		if (aCell == null)
 			aCell = aRow.createCell(y);
-		XSSFDataFormat df = getCurrentWorkBook().createDataFormat();
-		XSSFCellStyle cs = getCurrentWorkBook().createCellStyle();
+		DataFormat df = getCurrentWorkBook().createDataFormat();
+		CellStyle cs = getCurrentWorkBook().createCellStyle();
 		cs.setDataFormat(df.getFormat(sCurrencyFormat));
 		
 	    if(getAutoWrapText()) {
@@ -540,15 +550,15 @@ public class CreateXLSX  implements ICreateExcel {
 	 *            currency format "#,##0.0";
 	 */
 	public void setValue(short x, short y, Double dValue, String sFormat) {
-		XSSFRow aRow = sheet.getRow(x);
-		XSSFCell aCell = null;
+		SXSSFRow aRow = sheet.getRow(x);
+		SXSSFCell aCell = null;
 		if (sheet.getRow(x) == null)
 			aRow = sheet.createRow(x);
 		aCell = aRow.getCell(y);
 		if (aCell == null)
 			aCell = aRow.createCell(y);
-		XSSFDataFormat df = getCurrentWorkBook().createDataFormat();
-		XSSFCellStyle cs = getCurrentWorkBook().createCellStyle();
+		DataFormat df = getCurrentWorkBook().createDataFormat();
+		CellStyle cs = getCurrentWorkBook().createCellStyle();
 		cs.setDataFormat(df.getFormat(sFormat));
 	    if(getAutoWrapText()) {
 	      cs.setWrapText(true);
@@ -570,8 +580,8 @@ public class CreateXLSX  implements ICreateExcel {
 		sCurrencyFormat = sFormat;
 	}
 	
-    private XSSFRow getRow(int iRow){
-    	XSSFRow aReturn = getCurrentSheet().getRow(iRow);
+    private SXSSFRow getRow(int iRow){
+    	SXSSFRow aReturn = getCurrentSheet().getRow(iRow);
     	if( aReturn == null)
     		aReturn = getCurrentSheet().createRow(iRow);
     	setRowID(iRow);
@@ -594,20 +604,20 @@ public class CreateXLSX  implements ICreateExcel {
 		if (aDS == null)
 			return false;
 		Vector aTempVector = null;
-		XSSFCell aTempCell = null;
-		XSSFRow aTempRow = null;
-		XSSFRow aTempRow2 = null;
+		SXSSFCell aTempCell = null;
+		SXSSFRow aTempRow = null;
+		SXSSFRow aTempRow2 = null;
 		Object obj = null;
 		int iOffSet = 0;
 		int targetRowFrom = 0;
 		int targetRowTo = 0;
 		try {
-			XSSFDataFormat df = getCurrentWorkBook().createDataFormat();
-			XSSFCellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
+			DataFormat df = getCurrentWorkBook().createDataFormat();
+			CellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
 			CurrencyCS.setDataFormat(df.getFormat(sCurrencyFormat));
-			XSSFFont font = getCurrentWorkBook().createFont();
+			Font font = getCurrentWorkBook().createFont();
 			font.setFontName("新細明體");
-			XSSFCellStyle style = getCurrentWorkBook().createCellStyle();
+			CellStyle style = getCurrentWorkBook().createCellStyle();
 			style.setFont(font);			
 
 			while (aDS.next()) {
@@ -635,8 +645,8 @@ public class CreateXLSX  implements ICreateExcel {
 						}
 					}
 					for (short m = aTempRow2.getFirstCellNum(); m < aTempRow2.getLastCellNum(); m++) {
-						XSSFCell sourceCell = aTempRow2.getCell(m);
-						XSSFCell targetCell = aTempRow.createCell(m);
+						SXSSFCell sourceCell = aTempRow2.getCell(m);
+						SXSSFCell targetCell = aTempRow.createCell(m);
 						if (sourceCell != null) {
 							targetCell.setCellStyle(sourceCell.getCellStyle());
 							targetCell.setCellType(sourceCell.getCellType());
@@ -715,9 +725,9 @@ public class CreateXLSX  implements ICreateExcel {
 		String sCheckString2 = null;
 		if (aRS == null)
 			return false;
-		XSSFCell aTempCell = null;
-		XSSFRow aTempRow = null;
-		XSSFRow aTempRow2 = null;
+		SXSSFCell aTempCell = null;
+		SXSSFRow aTempRow = null;
+		SXSSFRow aTempRow2 = null;
 		Object obj = null;
 		String sColumnTypeName = null;
 		String sColumnName = null;
@@ -729,12 +739,12 @@ public class CreateXLSX  implements ICreateExcel {
 		int targetRowTo = 0;
 		try {
 			metaData = aRS.getMetaData();
-			XSSFDataFormat df = getCurrentWorkBook().createDataFormat();
-			XSSFCellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
+			DataFormat df = getCurrentWorkBook().createDataFormat();
+			CellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
 			CurrencyCS.setDataFormat(df.getFormat(sCurrencyFormat));
-			XSSFFont font = getCurrentWorkBook().createFont();
+			Font font = getCurrentWorkBook().createFont();
 			font.setFontName("新細明體");
-			XSSFCellStyle style = getCurrentWorkBook().createCellStyle();
+			CellStyle style = getCurrentWorkBook().createCellStyle();
 			style.setFont(font);			
 			if (bolPrintResultSetHeader) {
 				aTempRow = getNextRow();
@@ -772,8 +782,8 @@ public class CreateXLSX  implements ICreateExcel {
 						}
 					}
 					for (short m = aTempRow2.getFirstCellNum(); m < aTempRow2.getLastCellNum(); m++) {
-						XSSFCell sourceCell = aTempRow2.getCell(m);
-						XSSFCell targetCell = aTempRow.createCell(m);
+						SXSSFCell sourceCell = aTempRow2.getCell(m);
+						SXSSFCell targetCell = aTempRow.createCell(m);
 
 						if (sourceCell != null) {
 							targetCell.setCellStyle(sourceCell.getCellStyle());
@@ -874,8 +884,8 @@ public class CreateXLSX  implements ICreateExcel {
 		String sCheckString2 = null;
 		if (aRS == null)
 			return false;
-		XSSFCell aTempCell = null;
-		XSSFRow aTempRow = null;
+		SXSSFCell aTempCell = null;
+		SXSSFRow aTempRow = null;
 		Object obj = null;
 		String sColumnTypeName = null;
 		String sColumnName = null;
@@ -885,14 +895,18 @@ public class CreateXLSX  implements ICreateExcel {
 		int iCounter = 0;
 		try {
 			metaData = aRS.getMetaData();
-			XSSFDataFormat df = getCurrentWorkBook().createDataFormat();
-			XSSFCellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
+			DataFormat df = getCurrentWorkBook().createDataFormat();
+			CellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
 			CurrencyCS.setDataFormat(df.getFormat(sCurrencyFormat));
 
-			XSSFFont font = getCurrentWorkBook().createFont();
+			Font font = getCurrentWorkBook().createFont();
 			font.setFontName("新細明體");
-			XSSFCellStyle style = getCurrentWorkBook().createCellStyle();
+			CellStyle style = getCurrentWorkBook().createCellStyle();
 			style.setFont(font);			
+			if( getAutoWrapText()){
+				style.setWrapText(true);
+				CurrencyCS.setWrapText(true);
+			}
 			if (bolPrintResultSetHeader) {
 
 				aTempRow = getNextRow();
@@ -904,14 +918,11 @@ public class CreateXLSX  implements ICreateExcel {
 			}
 			while (aRS.next()) {
 				iCounter++;
+				System.out.println("calculateExcel counter = "+iCounter);
 				if (iCheckCells > 0) {
 					sCheckString2 = "";
 					for (int i = 0; i < iCheckCells; i++)
 						sCheckString2 = sCheckString2 + aRS.getString(i + 1);
-				}
-				if( getAutoWrapText()){
-					style.setWrapText(true);
-					CurrencyCS.setWrapText(true);
 				}
 				aTempRow = getNextRow();
 				for (short i = 0; i < metaData.getColumnCount(); i++) {
@@ -936,16 +947,13 @@ public class CreateXLSX  implements ICreateExcel {
 						aTempCell.setCellStyle(style);
 						aTempCell.setCellValue(new XSSFRichTextString(sData));
 
-					}
-					if (sDataTypeName.equalsIgnoreCase("Integer")) {
+					}else if (sDataTypeName.equalsIgnoreCase("Integer")) {
 						if (sData != null && !sData.trim().equals("")) {
 							aTempCell.setCellStyle(CurrencyCS);
 							aTempCell.setCellValue((new Double(sData)).doubleValue());
 						}
 
-					}
-
-					if (sDataTypeName.equalsIgnoreCase("Double") || sDataTypeName.equalsIgnoreCase("Float")
+					}else if (sDataTypeName.equalsIgnoreCase("Double") || sDataTypeName.equalsIgnoreCase("Float")
 							|| sDataTypeName.equalsIgnoreCase("Long")) {
 						if (sData != null && !sData.trim().equals("")) {
 							aTempCell.setCellStyle(CurrencyCS);
@@ -954,11 +962,9 @@ public class CreateXLSX  implements ICreateExcel {
 
 					}
 					if( !getAutoWrapText() && getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(i);
-
+                    
 				}
-
 				sCheckString1 = sCheckString2;
-
 			}
 			return true;
 		} catch (Exception ex) {
@@ -986,7 +992,7 @@ public class CreateXLSX  implements ICreateExcel {
 			XSSFClientAnchor anchor;
 			anchor = new XSSFClientAnchor(0,0,0,0,(short)x1,y1,(short)x2,y2);
 			anchor.setAnchorType( ClientAnchor.AnchorType.MOVE_DONT_RESIZE );
-			XSSFPicture picture = patriarch.createPicture(anchor, loadPicture( aIS, getCurrentWorkBook()));
+			SXSSFPicture picture = patriarch.createPicture(anchor, loadPicture( aIS, getCurrentWorkBook()));
 			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -1014,7 +1020,7 @@ public class CreateXLSX  implements ICreateExcel {
 			 XSSFClientAnchor anchor;
 			 anchor = new XSSFClientAnchor(0,0,0,0,(short)x1,y1,(short)x2,y2);
 			 anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_AND_RESIZE);
-			 XSSFPicture picture = patriarch.createPicture(anchor,
+			 SXSSFPicture picture = patriarch.createPicture(anchor,
 			 loadPicture( sPicLocation, getCurrentWorkBook()));
 			 picture.setNoFill(false);
 			return true;
@@ -1024,7 +1030,7 @@ public class CreateXLSX  implements ICreateExcel {
 		}
 	}
 
-	private int loadPicture(String path, XSSFWorkbook wb) throws IOException {
+	private int loadPicture(String path, SXSSFWorkbook wb) throws IOException {
 		InputStream fis = null;
 		try {
 			fis = new FileInputStream(path);
@@ -1034,7 +1040,7 @@ public class CreateXLSX  implements ICreateExcel {
 		return loadPicture(fis, wb);
 	}
 
-	private int loadPicture(InputStream aIS, XSSFWorkbook wb) throws IOException {
+	private int loadPicture(InputStream aIS, SXSSFWorkbook wb) throws IOException {
 		int pictureIndex;
 		InputStream fis = null;
 		ByteArrayOutputStream bos = null;
@@ -1074,12 +1080,12 @@ public class CreateXLSX  implements ICreateExcel {
 		if (aDS == null)
 			return false;
 		Vector aTempVector = null;
-		XSSFCell aTempCell = null;
-		XSSFRow aTempRow = null;
+		SXSSFCell aTempCell = null;
+		SXSSFRow aTempRow = null;
 		Object obj = null;
 		try {
-			XSSFDataFormat df = getCurrentWorkBook().createDataFormat();
-			XSSFCellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
+			DataFormat df = getCurrentWorkBook().createDataFormat();
+			CellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
 			CurrencyCS.setDataFormat(df.getFormat(sCurrencyFormat));
 
 			while (aDS.next()) {
