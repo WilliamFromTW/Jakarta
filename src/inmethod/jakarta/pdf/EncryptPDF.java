@@ -71,7 +71,7 @@ public class EncryptPDF {
 	 * @param sSourceDir source directory
 	 * @param sDestDir  source directory
 	 * @param byteUserPass user password , can be null
-	 * @param sOwnPass  owner password , can be null
+	 * @param byteOwnerPass  owner password , can be null
 	 *
 	 */
 	public boolean encryptFile(String sSourceDir, String sDestDir,byte[] byteUserPass,byte[] byteOwnerPass) {

@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 	 * Update DDNS using google DDNS.
 	 * This class must run in java web container (servlet 3.1).
 	 * 
-	 * @BackEnd
 	 * <pre>
 	 *   URL: ddclientProxyServlet
 	 * 

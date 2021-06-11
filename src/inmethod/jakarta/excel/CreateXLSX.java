@@ -7,13 +7,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 
 import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -27,6 +33,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -34,6 +41,8 @@ import org.apache.poi.xssf.usermodel.XSSFPicture;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.sun.prism.paint.Color;
 
 import inmethod.commons.rdb.DataSet;
 
@@ -47,8 +56,8 @@ public class CreateXLSX  implements ICreateExcel {
 	private boolean bolPrintResultSetHeader;
 	private boolean bolAutoWrapText = false;
 	private boolean bolAutoSizeColumn = false;
-	private String sCurrencyFormat = "#,##0.0";
-	private String sIntCurrencyFormat = "#,##0";
+	private String sDecimalFormat = "#,##0.0##";
+	private String sIntegerFormat = "#,##0";
 	
 
 	private SXSSFWorkbook workBook;
@@ -56,7 +65,15 @@ public class CreateXLSX  implements ICreateExcel {
 	private SXSSFRow headerRow = null;
 	private SXSSFCell headerCell = null;
 	private SXSSFDrawing patriarch = null;
+	private ArrayList<Integer> aDateColumnAlert = new ArrayList<Integer>();
 	
+	/**
+	 * if column is date format and before report date , cell font will be  red color
+	 * @param iColumn
+	 */
+	public void addDateColumnAlter(int iColumn) {
+		aDateColumnAlert.add(new Integer(iColumn));
+	}
 	
 	private CreateXLSX() {
 	}
@@ -493,7 +510,7 @@ public class CreateXLSX  implements ICreateExcel {
 			aCell = aRow.createCell(y);
 		DataFormat df = getCurrentWorkBook().createDataFormat();
 		CellStyle cs = getCurrentWorkBook().createCellStyle();
-		cs.setDataFormat(df.getFormat(sIntCurrencyFormat));
+		cs.setDataFormat(df.getFormat(sIntegerFormat));
 	    if(getAutoWrapText()) {
 	      cs.setWrapText(true);
 		  aCell.setCellStyle(cs);
@@ -523,7 +540,7 @@ public class CreateXLSX  implements ICreateExcel {
 			aCell = aRow.createCell(y);
 		DataFormat df = getCurrentWorkBook().createDataFormat();
 		CellStyle cs = getCurrentWorkBook().createCellStyle();
-		cs.setDataFormat(df.getFormat(sCurrencyFormat));
+		cs.setDataFormat(df.getFormat(sDecimalFormat));
 		
 	    if(getAutoWrapText()) {
 	      cs.setWrapText(true);
@@ -577,7 +594,7 @@ public class CreateXLSX  implements ICreateExcel {
 	 * @param sFormat
 	 */
 	public void setGlobalCurrencyFormat(String sFormat) {
-		sCurrencyFormat = sFormat;
+		sDecimalFormat = sFormat;
 	}
 	
     private SXSSFRow getRow(int iRow){
@@ -613,10 +630,15 @@ public class CreateXLSX  implements ICreateExcel {
 		int targetRowTo = 0;
 		try {
 			DataFormat df = getCurrentWorkBook().createDataFormat();
-			CellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
-			CurrencyCS.setDataFormat(df.getFormat(sCurrencyFormat));
-			Font font = getCurrentWorkBook().createFont();
-			font.setFontName("新細明體");
+			
+			CellStyle sDecimalCS = getCurrentWorkBook().createCellStyle();
+			sDecimalCS.setDataFormat(df.getFormat(sDecimalFormat));
+			CellStyle sIntegerCS = getCurrentWorkBook().createCellStyle();
+			sIntegerCS.setDataFormat(df.getFormat(sIntegerFormat));
+			
+			
+			Font font = getCurrentWorkBook().createFont();			
+			font.setFontName("新細明體");			
 			CellStyle style = getCurrentWorkBook().createCellStyle();
 			style.setFont(font);			
 
@@ -663,7 +685,8 @@ public class CreateXLSX  implements ICreateExcel {
 				}
 				if( getAutoWrapText()){
 					style.setWrapText(true);
-					CurrencyCS.setWrapText(true);
+					sDecimalCS.setWrapText(false);
+					sIntegerCS.setWrapText(false);
 				}
 					
 				for (short i = 0; i < aTempVector.size(); i++) {
@@ -683,12 +706,12 @@ public class CreateXLSX  implements ICreateExcel {
 							}
 
 					if (obj instanceof Double) {
-						aTempCell.setCellStyle(CurrencyCS);
+						aTempCell.setCellStyle(sDecimalCS);
 						aTempCell.setCellValue(((Double) obj).doubleValue());
 					}
 
 					if (obj instanceof Integer) {
-						aTempCell.setCellStyle(CurrencyCS);
+						aTempCell.setCellStyle(sIntegerCS);
 						aTempCell.setCellValue(((Integer) obj).intValue());
 					}
 
@@ -698,7 +721,7 @@ public class CreateXLSX  implements ICreateExcel {
 					}
 					if (obj instanceof Short) {
 						aTempCell.setCellType(CellType.NUMERIC);
-						aTempCell.setCellStyle(CurrencyCS);
+						aTempCell.setCellStyle(sDecimalCS);
 						aTempCell.setCellValue(((Short) obj).shortValue());
 					}
 					if( !getAutoWrapText() && getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(i);
@@ -740,12 +763,18 @@ public class CreateXLSX  implements ICreateExcel {
 		try {
 			metaData = aRS.getMetaData();
 			DataFormat df = getCurrentWorkBook().createDataFormat();
-			CellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
-			CurrencyCS.setDataFormat(df.getFormat(sCurrencyFormat));
+			CellStyle sDecimalCS = getCurrentWorkBook().createCellStyle();
+			sDecimalCS.setDataFormat(df.getFormat(sDecimalFormat));
+			CellStyle sIntegerCS = getCurrentWorkBook().createCellStyle();
+			sIntegerCS.setDataFormat(df.getFormat(sIntegerFormat));
+
 			Font font = getCurrentWorkBook().createFont();
 			font.setFontName("新細明體");
 			CellStyle style = getCurrentWorkBook().createCellStyle();
 			style.setFont(font);			
+			CellStyle dateStyle = getCurrentWorkBook().createCellStyle();
+			CreationHelper createHelper = getCurrentWorkBook().getCreationHelper();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy/mm/dd"));
 			if (bolPrintResultSetHeader) {
 				aTempRow = getNextRow();
 				for (short i = 0; i < metaData.getColumnCount(); i++) {
@@ -795,14 +824,17 @@ public class CreateXLSX  implements ICreateExcel {
 				iShiftRow++;
 				if( getAutoWrapText()){
 					style.setWrapText(true);
-					CurrencyCS.setWrapText(true);
+					sDecimalCS.setWrapText(false);
+					sIntegerCS.setWrapText(false);
 				}
 				for (short i = 0; i < metaData.getColumnCount(); i++) {
 					if (aTempRow.getCell(i) == null)
 						aTempCell = aTempRow.createCell(i);
 					else
 						aTempCell = aTempRow.getCell(i);
+//					System.out.println("getColumnType="+metaData.getColumnType((int) (i + 1)));
 					sDataTypeName = getDataType(metaData.getColumnType((int) (i + 1)));
+	//				System.out.println("getColumnType="+metaData.getColumnType((int) (i + 1))+",DataTypeName="+sDataTypeName);
 					sColumnName = metaData.getColumnName((int) (i + 1));
 					if (iCheckCells > 0)
 						if (sCheckString1.equals(sCheckString2)) {
@@ -814,26 +846,32 @@ public class CreateXLSX  implements ICreateExcel {
 							sData = aRS.getString(sColumnName);
 					else
 						sData = aRS.getString(sColumnName);
-
-					if (sDataTypeName.equalsIgnoreCase("String") || sDataTypeName.equalsIgnoreCase("Date")
-							|| sDataTypeName.equalsIgnoreCase("object")) {
+					 if(  inmethod.commons.util.DateUtil.convertToDate(sData) instanceof Date  ) {
+	                    	//System.out.println("Yes!");
+	                    	dateStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
+	                    	Font myfont = getCurrentWorkBook().createFont(); 
+	                    	myfont.setColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
+	                    	dateStyle.setFont(myfont);
+	                    	aTempCell.setCellType(CellType.STRING );
+							aTempCell.setCellStyle(dateStyle);
+							aTempCell.setCellValue(inmethod.commons.util.DateUtil.convertToDate(sData));
+	                    	
+	                    
+					}else if (sDataTypeName.equalsIgnoreCase("String") || sDataTypeName.equalsIgnoreCase("object")) {
 						aTempCell.setCellType(CellType.STRING);
 						aTempCell.setCellStyle(style);
 						aTempCell.setCellValue(new XSSFRichTextString(sData));
 
-					}
-					if (sDataTypeName.equalsIgnoreCase("Integer")) {
+					}else if (sDataTypeName.equalsIgnoreCase("Integer")) {
 						if (sData != null && !sData.trim().equals("")) {
-							aTempCell.setCellStyle(CurrencyCS);
+							aTempCell.setCellStyle(sIntegerCS);
 							aTempCell.setCellValue((new Integer(sData)).intValue());
 						}
 
-					}
-
-					if (sDataTypeName.equalsIgnoreCase("Double") || sDataTypeName.equalsIgnoreCase("Float")
+					}else if (sDataTypeName.equalsIgnoreCase("Double") || sDataTypeName.equalsIgnoreCase("Float")
 							|| sDataTypeName.equalsIgnoreCase("Long")) {
 						if (sData != null && !sData.trim().equals("")) {
-							aTempCell.setCellStyle(CurrencyCS);
+							aTempCell.setCellStyle(sDecimalCS);
 							aTempCell.setCellValue((new Double(sData)).doubleValue());
 						}
 
@@ -896,8 +934,10 @@ public class CreateXLSX  implements ICreateExcel {
 		try {
 			metaData = aRS.getMetaData();
 			DataFormat df = getCurrentWorkBook().createDataFormat();
-			CellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
-			CurrencyCS.setDataFormat(df.getFormat(sCurrencyFormat));
+			CellStyle sDecimalCS = getCurrentWorkBook().createCellStyle();
+			sDecimalCS.setDataFormat(df.getFormat(sDecimalFormat));
+			CellStyle sIntegerCS = getCurrentWorkBook().createCellStyle();
+			sIntegerCS.setDataFormat(df.getFormat(sIntegerFormat));
 
 			Font font = getCurrentWorkBook().createFont();
 			font.setFontName("新細明體");
@@ -905,7 +945,8 @@ public class CreateXLSX  implements ICreateExcel {
 			style.setFont(font);			
 			if( getAutoWrapText()){
 				style.setWrapText(true);
-				CurrencyCS.setWrapText(true);
+				sDecimalCS.setWrapText(false);
+				sIntegerCS.setWrapText(false);
 			}
 			if (bolPrintResultSetHeader) {
 
@@ -918,7 +959,7 @@ public class CreateXLSX  implements ICreateExcel {
 			}
 			while (aRS.next()) {
 				iCounter++;
-				System.out.println("calculateExcel counter = "+iCounter);
+				//System.out.println("calculateExcel counter = "+iCounter);
 				if (iCheckCells > 0) {
 					sCheckString2 = "";
 					for (int i = 0; i < iCheckCells; i++)
@@ -927,7 +968,9 @@ public class CreateXLSX  implements ICreateExcel {
 				aTempRow = getNextRow();
 				for (short i = 0; i < metaData.getColumnCount(); i++) {
 					aTempCell = aTempRow.createCell(i);
+					//System.out.println("getColumnType="+metaData.getColumnType((int) (i + 1)));
 					sDataTypeName = getDataType(metaData.getColumnType((int) (i + 1)));
+					//System.out.println("getColumnType="+metaData.getColumnType((int) (i + 1))+",DataTypeName="+sDataTypeName);
 					sColumnName = metaData.getColumnName((int) (i + 1));
 					if (iCheckCells > 0)
 						if (sCheckString1.equals(sCheckString2)) {
@@ -940,8 +983,58 @@ public class CreateXLSX  implements ICreateExcel {
 					else
 						sData = aRS.getString(sColumnName);
                     if( sData==null) sData = "";
-					if (sDataTypeName.equalsIgnoreCase("String") || sDataTypeName.equalsIgnoreCase("Date")
-							|| sDataTypeName.equalsIgnoreCase("object")) {
+                	//System.out.print(sData + " is Date ? ");
+                    Date aDate = inmethod.commons.util.DateUtil.convertToDate(sData);
+                    if( aDate instanceof Date  ) {
+            			CellStyle dateStyle = getCurrentWorkBook().createCellStyle();
+            			CreationHelper createHelper = getCurrentWorkBook().getCreationHelper();
+            			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy/mm/dd"));
+                    	//System.out.println("Yes!column="+i);
+                      	Font myfont = getCurrentWorkBook().createFont(); 
+                      	myfont.setColor(HSSFColor.HSSFColorPredefined.BLACK.getIndex());
+                    	dateStyle.setFont(myfont);                          
+                    	try {
+                    	  for( int iii=0;iii<aDateColumnAlert.size();iii++) {
+                          //	System.out.println("aDateColumnAlert.get(iii)="+aDateColumnAlert.get(iii).intValue());                    		  
+                    	    if( aDateColumnAlert.get(iii).shortValue()==i ) { 
+                    	      Calendar aToday = Calendar.getInstance();
+                    	      Calendar dataDate = Calendar.getInstance();
+                    	      dataDate.setTime(aDate);
+                    	      
+                    	      
+                    	    //  System.out.println("this year is "+ aToday.get(Calendar.YEAR));
+                    	    //  System.out.println("data year is "+ dataDate.get(Calendar.YEAR));
+                    	    //  System.out.println("Today days is "+ aToday.get(Calendar.DAY_OF_YEAR));
+                    	    // System.out.println("data days is "+ dataDate.get(Calendar.DAY_OF_YEAR));
+                    	      if( aToday.get(Calendar.YEAR)>dataDate.get(Calendar.YEAR) ) {
+                    	    	  myfont.setColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
+                    	    	  myfont.setBold(true);
+                            	  dateStyle.setFont(myfont);                       
+                                  break;                    	    	  
+                    	      }else  if( aToday.get(Calendar.YEAR)<dataDate.get(Calendar.YEAR) ) {
+                    	    	  myfont.setColor(HSSFColor.HSSFColorPredefined.BLACK.getIndex());
+                            	  dateStyle.setFont(myfont);                       
+                                  break;                    	    	  
+                    	      }
+                    	      else   if( aToday.get(Calendar.DAY_OF_YEAR)>dataDate.get(Calendar.DAY_OF_YEAR) ) {
+                        	    myfont.setColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
+                  	    	    myfont.setBold(true);
+                          	    dateStyle.setFont(myfont);                          
+                        	    System.out.println("red");
+                          	  break;
+                    	      }
+                    	    }
+                    	    	
+                   	      }
+
+                    	}catch(Exception ex) {ex.printStackTrace();}
+                    	
+                    	
+                    	aTempCell.setCellType(CellType.STRING );
+						aTempCell.setCellStyle(dateStyle);
+						aTempCell.setCellValue(aDate);
+                    	
+                    }else if (sDataTypeName.equalsIgnoreCase("String") || sDataTypeName.equalsIgnoreCase("object")) {
 
 						aTempCell.setCellType(CellType.STRING);
 						aTempCell.setCellStyle(style);
@@ -949,14 +1042,14 @@ public class CreateXLSX  implements ICreateExcel {
 
 					}else if (sDataTypeName.equalsIgnoreCase("Integer")) {
 						if (sData != null && !sData.trim().equals("")) {
-							aTempCell.setCellStyle(CurrencyCS);
+							aTempCell.setCellStyle(sIntegerCS);
 							aTempCell.setCellValue((new Double(sData)).doubleValue());
 						}
 
 					}else if (sDataTypeName.equalsIgnoreCase("Double") || sDataTypeName.equalsIgnoreCase("Float")
 							|| sDataTypeName.equalsIgnoreCase("Long")) {
 						if (sData != null && !sData.trim().equals("")) {
-							aTempCell.setCellStyle(CurrencyCS);
+							aTempCell.setCellStyle(sDecimalCS);
 							aTempCell.setCellValue((new Double(sData)).doubleValue());
 						}
 
@@ -976,7 +1069,7 @@ public class CreateXLSX  implements ICreateExcel {
 	/**
 	 * create picture (jpeg)
 	 * 
-	 * @param aIS
+	 * @param aIS inputstream
 	 * @param x1
 	 *            col number 1..n
 	 * @param y1
@@ -992,7 +1085,7 @@ public class CreateXLSX  implements ICreateExcel {
 			XSSFClientAnchor anchor;
 			anchor = new XSSFClientAnchor(0,0,0,0,(short)x1,y1,(short)x2,y2);
 			anchor.setAnchorType( ClientAnchor.AnchorType.MOVE_DONT_RESIZE );
-			SXSSFPicture picture = patriarch.createPicture(anchor, loadPicture( aIS, getCurrentWorkBook()));
+			//SXSSFPicture picture = patriarch.createPicture(anchor, loadPicture( aIS, getCurrentWorkBook()));
 			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -1085,8 +1178,10 @@ public class CreateXLSX  implements ICreateExcel {
 		Object obj = null;
 		try {
 			DataFormat df = getCurrentWorkBook().createDataFormat();
-			CellStyle CurrencyCS = getCurrentWorkBook().createCellStyle();
-			CurrencyCS.setDataFormat(df.getFormat(sCurrencyFormat));
+			CellStyle sDecimalCS = getCurrentWorkBook().createCellStyle();
+			sDecimalCS.setDataFormat(df.getFormat(sDecimalFormat));
+			CellStyle sIntegerCS = getCurrentWorkBook().createCellStyle();
+			sIntegerCS.setDataFormat(df.getFormat(sIntegerFormat));
 
 			while (aDS.next()) {
 				aTempVector = (Vector) aDS.getData();
@@ -1107,12 +1202,12 @@ public class CreateXLSX  implements ICreateExcel {
 							}
 
 					if (obj instanceof Double) {
-						aTempCell.setCellStyle(CurrencyCS);
+						aTempCell.setCellStyle(sDecimalCS);
 						aTempCell.setCellValue(((Double) obj).doubleValue());
 					}
 
 					if (obj instanceof Integer) {
-						aTempCell.setCellStyle(CurrencyCS);
+						aTempCell.setCellStyle(sIntegerCS);
 						aTempCell.setCellValue(((Integer) obj).intValue());
 					}
 
@@ -1122,7 +1217,7 @@ public class CreateXLSX  implements ICreateExcel {
 					}
 					if (obj instanceof Short) {
 						aTempCell.setCellType(CellType.NUMERIC);
-						aTempCell.setCellStyle(CurrencyCS);
+						aTempCell.setCellStyle(sDecimalCS);
 						aTempCell.setCellValue(((Short) obj).shortValue());
 					}
 				}

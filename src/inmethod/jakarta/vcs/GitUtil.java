@@ -396,8 +396,6 @@ public class GitUtil {
 
 	/**
 	 * 
-	 * @param sUserName
-	 * @param sPasswd
 	 * @param sMessage
 	 * @return
 	 */
@@ -415,9 +413,9 @@ public class GitUtil {
 
 	/**
 	 * 
-	 * @param sUserName
-	 * @param sPasswd
 	 * @param sMessage
+	 * @param sAuthorName
+	 * @param sAuthorEmail
 	 * @return
 	 */
 	public boolean commit(String sMessage, String sAuthorName, String sAuthorEmail) {
@@ -438,7 +436,7 @@ public class GitUtil {
 
 	/**
 	 * 
-	 * @param sRemoteUrl
+	 * @param sRemote
 	 * @param sUserName
 	 * @param sPasswd
 	 * @return

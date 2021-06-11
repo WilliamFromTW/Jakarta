@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="lib/commons-net-3.5.jar"/>
 	<classpathentry kind="lib" path="lib/curvesapi-1.04.jar"/>
-	<classpathentry kind="lib" path="lib/InMethodTools-2.03-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/jsch-0.1.54.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-4.5.7.201904151645-r.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.17.jar"/>
@@ -36,5 +35,6 @@
 	<classpathentry kind="lib" path="lib/itext/itext7-sign-7.1.5.jar"/>
 	<classpathentry kind="lib" path="lib/itext/itextasian-1.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/itext/itextpdf-5.5.13.jar"/>
+	<classpathentry kind="lib" path="lib/InMethodTools-2.04-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
