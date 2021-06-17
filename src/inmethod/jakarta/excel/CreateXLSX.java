@@ -772,9 +772,6 @@ public class CreateXLSX  implements ICreateExcel {
 			font.setFontName("新細明體");
 			CellStyle style = getCurrentWorkBook().createCellStyle();
 			style.setFont(font);			
-			CellStyle dateStyle = getCurrentWorkBook().createCellStyle();
-			CreationHelper createHelper = getCurrentWorkBook().getCreationHelper();
-			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy/mm/dd"));
 			if (bolPrintResultSetHeader) {
 				aTempRow = getNextRow();
 				for (short i = 0; i < metaData.getColumnCount(); i++) {
@@ -797,7 +794,12 @@ public class CreateXLSX  implements ICreateExcel {
 				getCurrentSheet().shiftRows(iShiftRow, getCurrentSheet().getLastRowNum(), 1, true, false);
 				aTempRow = getRow(iShiftRow);
 				
+				try {
 				aTempRow2 = getRow(iShiftRow + iOffSet);
+				}catch(Exception ex) {
+					ex.printStackTrace();
+					continue;
+				}
 				if (aTempRow2 != null) {
 					for (int n = 0; n < getCurrentSheet().getNumMergedRegions(); n++) {
 						CellRangeAddress region = getCurrentSheet().getMergedRegion(n);
@@ -846,15 +848,56 @@ public class CreateXLSX  implements ICreateExcel {
 							sData = aRS.getString(sColumnName);
 					else
 						sData = aRS.getString(sColumnName);
+                    Date aDate = inmethod.commons.util.DateUtil.convertToDate(sData);
+
 					 if(  inmethod.commons.util.DateUtil.convertToDate(sData) instanceof Date  ) {
-	                    	//System.out.println("Yes!");
-	                    	dateStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
-	                    	Font myfont = getCurrentWorkBook().createFont(); 
-	                    	myfont.setColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
+	            			CellStyle dateStyle = getCurrentWorkBook().createCellStyle();
+	            			CreationHelper createHelper = getCurrentWorkBook().getCreationHelper();
+	            			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy/mm/dd"));
+	                    	//System.out.println("Yes!column="+i);
+	                      	Font myfont = getCurrentWorkBook().createFont(); 
+	                      	myfont.setColor(HSSFColor.HSSFColorPredefined.BLACK.getIndex());
 	                    	dateStyle.setFont(myfont);
-	                    	aTempCell.setCellType(CellType.STRING );
-							aTempCell.setCellStyle(dateStyle);
-							aTempCell.setCellValue(inmethod.commons.util.DateUtil.convertToDate(sData));
+	                    	try {
+	                      	  for( int iii=0;iii<aDateColumnAlert.size();iii++) {
+	                            //	System.out.println("aDateColumnAlert.get(iii)="+aDateColumnAlert.get(iii).intValue());                    		  
+	                      	    if( aDateColumnAlert.get(iii).shortValue()==i ) { 
+	                      	      Calendar aToday = Calendar.getInstance();
+	                      	      Calendar dataDate = Calendar.getInstance();
+	                      	      dataDate.setTime(aDate);
+	                      	      
+	                      	      
+	                      	    //  System.out.println("this year is "+ aToday.get(Calendar.YEAR));
+	                      	    //  System.out.println("data year is "+ dataDate.get(Calendar.YEAR));
+	                      	    //  System.out.println("Today days is "+ aToday.get(Calendar.DAY_OF_YEAR));
+	                      	    // System.out.println("data days is "+ dataDate.get(Calendar.DAY_OF_YEAR));
+	                      	      if( aToday.get(Calendar.YEAR)>dataDate.get(Calendar.YEAR) ) {
+	                      	    	  myfont.setColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
+	                      	    	  myfont.setBold(true);
+	                              	  dateStyle.setFont(myfont);                       
+	                                    break;                    	    	  
+	                      	      }else  if( aToday.get(Calendar.YEAR)<dataDate.get(Calendar.YEAR) ) {
+	                      	    	  myfont.setColor(HSSFColor.HSSFColorPredefined.BLACK.getIndex());
+	                              	  dateStyle.setFont(myfont);                       
+	                                    break;                    	    	  
+	                      	      }
+	                      	      else   if( aToday.get(Calendar.DAY_OF_YEAR)>dataDate.get(Calendar.DAY_OF_YEAR) ) {
+	                          	    myfont.setColor(HSSFColor.HSSFColorPredefined.RED.getIndex());
+	                    	    	    myfont.setBold(true);
+	                            	    dateStyle.setFont(myfont);                          
+	                          	//    System.out.println("red");
+	                            	  break;
+	                      	      }
+	                      	    }
+	                      	    	
+	                     	      }
+
+	                      	}catch(Exception ex) {ex.printStackTrace();}
+	                      	
+	                      	
+	                      	//aTempCell.setCellType(CellType.STRING );
+	  						aTempCell.setCellStyle(dateStyle);
+	  						aTempCell.setCellValue(aDate);
 	                    	
 	                    
 					}else if (sDataTypeName.equalsIgnoreCase("String") || sDataTypeName.equalsIgnoreCase("object")) {
@@ -1030,7 +1073,7 @@ public class CreateXLSX  implements ICreateExcel {
                     	}catch(Exception ex) {ex.printStackTrace();}
                     	
                     	
-                    	aTempCell.setCellType(CellType.STRING );
+                    	//aTempCell.setCellType(CellType.STRING );
 						aTempCell.setCellStyle(dateStyle);
 						aTempCell.setCellValue(aDate);
                     	
