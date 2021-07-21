@@ -1,4 +1,5 @@
 package inmethod.jakarta.excel;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.*;
 import java.io.*;
 import java.util.*;
@@ -94,14 +95,14 @@ public class ReadXLSX implements IReadExcel{
         for(short k=0;k<shortNumOfCell;k++){
           if( aRow.getCell(k)!= null){
         	System.out.println("Data from Cell(" + k + ") = " + aRow.getCell(k).toString() );
-            if(aRow.getCell(k).getCellType()==XSSFCell.CELL_TYPE_NUMERIC){
+            if(aRow.getCell(k).getCellType()==CellType.NUMERIC){
               NumberFormat formatter = new DecimalFormat("##0.#");
               aDataCell.add(formatter.format(aRow.getCell(k).getNumericCellValue()));
             }
-            else if(aRow.getCell(k).getCellType()==XSSFCell.CELL_TYPE_BOOLEAN){
+            else if(aRow.getCell(k).getCellType()==CellType.BOOLEAN){
               aDataCell.add(aRow.getCell(k).getBooleanCellValue());
             }
-            else if(aRow.getCell(k).getCellType()==XSSFCell.CELL_TYPE_BLANK ){
+            else if(aRow.getCell(k).getCellType()==CellType.BLANK ){
               aDataCell.add("");
             }
             else

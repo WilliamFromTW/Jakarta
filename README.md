@@ -9,13 +9,15 @@
    and copy test files  in directory "test_files" to "tmp" directory.
    
 ## lib for create/read excel
-   poi-ooxml-3.17.jar    
-   poi-ooxml-schemas-3.17.jar   
-   poi-3.17.jar    
+   poi-xxx.jar   
    commons-net-1.2.2.jar    
-   commons-collections4-4.1.jar    
-   commons-codec-1.10.jar    
-   xbean.jar( version  3.0.1 )
+   commons-collections4-4.4.jar    
+   commons-codec-1.15.jar 
+   commons-math3-3.6.1.jar
+   SparseBitSet-1.2.jar   
+   curvesapi-1.06.jar
+   commons-compress-1.20.jar
+   xbean.jar( version  4.0.0 )
    
 ## lib for Git utility
    slf4j-api-1.7.22.jar    

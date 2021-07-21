@@ -785,7 +785,7 @@ public class CreateXLS implements ICreateExcel {
           if( sDataTypeName.equalsIgnoreCase("String") ||
               sDataTypeName.equalsIgnoreCase("Date")  ||
               sDataTypeName.equalsIgnoreCase("object") ) {
-            aTempCell.setCellType(HSSFCell.CELL_TYPE_STRING );
+            aTempCell.setCellType(CellType.STRING );
             aTempCell.setCellValue( new HSSFRichTextString(sData));
 
           }
