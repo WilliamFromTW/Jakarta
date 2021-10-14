@@ -65,6 +65,12 @@ public class CreateXLSX  implements ICreateExcel {
 	private SXSSFCell headerCell = null;
 	private SXSSFDrawing patriarch = null;
 	private ArrayList<Integer> aDateColumnAlert = new ArrayList<Integer>();
+	private Font font = null;
+	private CellStyle fontstyle = null;
+	private CellStyle dateStyle = null;
+	private CreationHelper createHelper = null;
+	
+
 	
 	/**
 	 * if column is date format and before report date , cell font will be  red color
@@ -108,6 +114,14 @@ public class CreateXLSX  implements ICreateExcel {
 				workBook = new SXSSFWorkbook(new XSSFWorkbook( aInput));
 			}
 			bolPrintResultSetHeader = false;
+			font = getCurrentWorkBook().createFont();
+			font.setFontName("新細明體");
+			fontstyle = getCurrentWorkBook().createCellStyle();
+			fontstyle.setFont(font);			
+			dateStyle = getCurrentWorkBook().createCellStyle();
+			createHelper = getCurrentWorkBook().getCreationHelper();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy/mm/dd"));
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -409,20 +423,16 @@ public class CreateXLSX  implements ICreateExcel {
 		aCell = aRow.getCell(y);
 		if (aCell == null)
 			aCell = aRow.createCell(y);
-		Font font = getCurrentWorkBook().createFont();
-		font.setFontName("新細明體");
-		CellStyle style = getCurrentWorkBook().createCellStyle();
-		style.setFont(font);			
 		
 		
 		aRow.setHeight((short) 0x349);
 		aCell.setCellType(CellType.STRING);
 	    if(getAutoWrapText()) {
-		  style.setWrapText(true);
-		  aCell.setCellStyle(style);
+	      fontstyle.setWrapText(true);
+		  aCell.setCellStyle(fontstyle);
 		  aCell.setCellValue(new XSSFRichTextString((String) aVector.get(0)));
 		}else {
-		  aCell.setCellStyle(style);
+		  aCell.setCellStyle(fontstyle);
 		  aCell.setCellValue(new XSSFRichTextString((String) aVector.get(0)));
 		  if( getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
 		}
@@ -850,9 +860,6 @@ public class CreateXLSX  implements ICreateExcel {
                     Date aDate = inmethod.commons.util.DateUtil.convertToDate(sData);
 
 					 if(  inmethod.commons.util.DateUtil.convertToDate(sData) instanceof Date  ) {
-	            			CellStyle dateStyle = getCurrentWorkBook().createCellStyle();
-	            			CreationHelper createHelper = getCurrentWorkBook().getCreationHelper();
-	            			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy/mm/dd"));
 	                    	//System.out.println("Yes!column="+i);
 	                      	Font myfont = getCurrentWorkBook().createFont(); 
 	                      	myfont.setColor(HSSFColor.HSSFColorPredefined.BLACK.getIndex());
@@ -1028,9 +1035,6 @@ public class CreateXLSX  implements ICreateExcel {
                 	//System.out.print(sData + " is Date ? ");
                     Date aDate = inmethod.commons.util.DateUtil.convertToDate(sData);
                     if( aDate instanceof Date  ) {
-            			CellStyle dateStyle = getCurrentWorkBook().createCellStyle();
-            			CreationHelper createHelper = getCurrentWorkBook().getCreationHelper();
-            			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy/mm/dd"));
                     	//System.out.println("Yes!column="+i);
                       	Font myfont = getCurrentWorkBook().createFont(); 
                       	myfont.setColor(HSSFColor.HSSFColorPredefined.BLACK.getIndex());
