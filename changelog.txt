@@ -1,8 +1,13 @@
+v3.2b2(not released yet)
+--
+1. 
+
 v3.2b1(not released yet)
 --
 1. poi bump to 5.0.0
 2. add word package 
 3. fix cell style exceeds 64000 limit 2021/10/14
+
 
 v3.1p5(not release)
 --

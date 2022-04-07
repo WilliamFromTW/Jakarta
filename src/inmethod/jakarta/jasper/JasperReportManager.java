@@ -7,12 +7,16 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
@@ -27,10 +31,15 @@ public class JasperReportManager {
 	private JasperPrint jasperPrint;
 
 	private JasperReportManager() {
+//		JRXmlLoader.load(null)
 	}
 
+
+	
+	
 	public JasperReportManager(String paraFileString1, String paraFileString2) throws Exception {
 		report = (JasperReport) JRLoader.loadObjectFromFile(paraFileString1);
+
 		aOutput = new FileOutputStream(paraFileString2);
 	}
 
@@ -56,11 +65,15 @@ public class JasperReportManager {
 		aConn = paraConn;
 	}
 
+	public JRBand getTitle() {
+		return report.getTitle();
+	}
+	
 	public void buildExcel() throws Exception {
 		JRXlsxExporter exporter = new JRXlsxExporter();
 
 		jasperPrint = JasperFillManager.fillReport(report, aMap, aConn);
-
+		
 		exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 		exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(aOutput));
 		SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
