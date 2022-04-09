@@ -10,6 +10,8 @@ import java.util.Map;
 import net.sf.jasperreports.engine.JRBand;
 import net.sf.jasperreports.engine.JRElement;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExpression;
+import net.sf.jasperreports.engine.JRImage;
 import net.sf.jasperreports.engine.JRStaticText;
 import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -17,8 +19,11 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRDesignExpression;
+import net.sf.jasperreports.engine.design.JRDesignImage;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.engine.type.ScaleImageEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -32,8 +37,9 @@ public class JasperDesignManager {
 	private java.io.OutputStream aOutput;
 	private JasperReport report;
 	private JasperDesign aJD;
-
-	public JasperDesignManager() {
+    private JRBand[] aJRbrands;
+    
+	private JasperDesignManager() {
 
 	}
 	
@@ -42,11 +48,35 @@ public class JasperDesignManager {
 	 * @param sXMLFile jasper design file 
 	 * @throws JRException
 	 */
-	public  void  setJasperDesign(String sXMLFile) throws JRException {
+	public JasperDesignManager(String sXMLFile) throws JRException {
 		aJD = JRXmlLoader.load(sXMLFile);
-	
+		aJRbrands= aJD.getAllBands();
 	}
+	
 
+
+	/**
+	 * 
+	 * @param sKey  image  properties key name
+	 * @param sImagePath
+	 */
+	public void setImagePath(String sKey,String sImagePath) {
+		for( JRBand a:aJRbrands ) {
+			JRElement b = a.getElementByKey(sKey);
+          	        	  
+	        	if(b instanceof JRDesignImage) {
+	        		JRDesignImage aJRI = ((JRDesignImage)b);
+	        		JRDesignExpression aJRExpression = new JRDesignExpression();
+	        		
+	        		aJRExpression.setValueClass(java.lang.String.class);
+	        		aJRExpression.setText("\""+sImagePath+"\"");
+	            	aJRI.setExpression(aJRExpression);
+	            	aJRI.setScaleImage(ScaleImageEnum.REAL_SIZE);
+	            	
+	        	}
+	          }
+	}
+	
 	/**
 	 * 
 	 * @param sXMLFile  report location 
@@ -77,7 +107,7 @@ public class JasperDesignManager {
 	
 	public  void addPdfCustomFont() throws JRException {
 		if( aJD==null)  throw new JRException("no JasperDesign object");
-		for( JRBand a:aJD.getAllBands()) {
+		for( JRBand a:aJRbrands ) {
 	          for( JRElement b: a.getElements()) {
 	        	if(b instanceof JRStaticText) {
 	        		JRStaticText aJRS = ((JRStaticText)b);

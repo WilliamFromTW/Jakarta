@@ -2,6 +2,7 @@
 <!-- Created with Jaspersoft Studio version 6.19.0.final using JasperReports Library version 6.19.0-646c68931cebf1a58bc65c4359d1f0ca223c5e94  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test_data" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="035d75a1-b9e2-4ee0-9259-4fcb04c545cf">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="test_data"/>
+	<parameter name="img" class="java.lang.String"/>
 	<queryString language="csv">
 		<![CDATA[]]>
 	</queryString>
@@ -14,12 +15,16 @@
 	<title>
 		<band height="79" splitType="Stretch">
 			<staticText>
-				<reportElement x="180" y="10" width="200" height="40" uuid="e0545272-cfc4-4ba9-be1d-324620fbff7f"/>
+				<reportElement x="50" y="10" width="200" height="40" uuid="e0545272-cfc4-4ba9-be1d-324620fbff7f"/>
 				<textElement textAlignment="Center">
 					<font size="26"/>
 				</textElement>
 				<text><![CDATA[Test測試]]></text>
 			</staticText>
+			<image evaluationTime="Auto">
+				<reportElement key="sImage" x="309" y="18" width="121" height="32" uuid="16b9d644-eaa1-45cf-8f3d-637e6546e794"/>
+				<imageExpression><![CDATA["S:/tmp/cropped-kafeiou_logo2.png"]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<pageHeader>

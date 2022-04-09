@@ -10,9 +10,9 @@ public class testJasper {
             String sJRxml = "/tmp/test_data.jrxml";
             String sJRxmlPdfFont = "/tmp/test_data_pdf_font.jrxml";
             String sJRreport = "/tmp/test_data_pdf_font.jasper";
-            JasperDesignManager aJDM = new JasperDesignManager();
-            aJDM.setJasperDesign(sJRxml);
+            JasperDesignManager aJDM = new JasperDesignManager(sJRxml);
             aJDM.addPdfCustomFont();
+            aJDM.setImagePath("sImage", "S:/tmp/cropped-kafeiou_logo2.png");
             aJDM.saveJasperDesign(sJRxmlPdfFont);
             aJDM.compileJasperReport(sJRreport);
             
