@@ -35,78 +35,31 @@ public class JasperReportManager {
 	private Connection aConn;
 	private JasperReport report;
 	private JasperPrint jasperPrint;
-	private JasperDesign aJD;
 
-	public JasperReportManager() {
+	private JasperReportManager() {
 
 	}
-
-	public  void  setJasperDesign(String sXMLFile) throws JRException {
-		aJD = JRXmlLoader.load(sXMLFile);
 	
-	}
 
+	
 	/**
 	 * 
-	 * @param sXMLFile  report location 
+	 * @param sXMLFile   jasper report file 
 	 * @param sFileOutputStreamPDF   generate report pdf file
 	 * @throws Exception
 	 */
-	public  void  setJasperReport(String sXMLFile, String sFileOutputStreamPDF) throws Exception {
+	public JasperReportManager(String sXMLFile, String sFileOutputStreamPDF) throws Exception {
 		report = (JasperReport) JRLoader.loadObjectFromFile(sXMLFile);
 
 		aOutput = new FileOutputStream(sFileOutputStreamPDF);
 	}
 
-	public void saveJasperDesign(String sXMLFile) throws JRException {
-		if( aJD!=null)
-		  JRXmlWriter.writeReport(aJD,sXMLFile,"UTF-8");
-		else throw new JRException("no JasperDesign object");
-	}
-	
-	public void compileJasperReport(String sXMLFile) throws JRException {
-		if( aJD!=null) {
-			
-			//JasperReport aReport = JasperCompileManager.compileReport(aJD);
-			JasperCompileManager.compileReportToFile(aJD,sXMLFile);
-		}
-		else throw new JRException("no JasperDesign object");
-		
-	}
-	
-	public  void addPdfCustomFont() throws JRException {
-		if( aJD==null)  throw new JRException("no JasperDesign object");
-		for( JRBand a:aJD.getAllBands()) {
-	          for( JRElement b: a.getElements()) {
-	        	if(b instanceof JRStaticText) {
-	        		JRStaticText aJRS = ((JRStaticText)b);
-	        		aJRS.setFontName("Arial Unicode MS");
-	        		aJRS.setPdfEmbedded(true);
-	        		aJRS.setPdfFontName("Arial Unicode MS");
-	        		aJRS.setPdfEncoding("Identity-H");
-	        	}else if( b instanceof JRTextField) {
-	        		JRTextField aJRT = ((JRTextField)b);
-	        		aJRT.setFontName("Arial Unicode MS");
-	        		aJRT.setPdfEmbedded(true);
-	        		aJRT.setPdfFontName("Arial Unicode MS");
-	        		aJRT.setPdfEncoding("Identity-H");
-	        	}
-	          }
-		}
-//		JRXmlWriter.writeReport(aJD,sXMLFile,"UTF-8");
-//		System.out.println(aJD.toString());
-//		JRSaver.saveObject(aJD, sXMLFile);
-	       //   JasperReport aReport = JasperCompileManager.compileReport(aJD);
-	     //     JRSaver.saveObject(aReport, sXMLFile);
-	          
-	}
-	
-	public JasperReportManager(String paraFileString1, String paraFileString2) throws Exception {
-		report = (JasperReport) JRLoader.loadObjectFromFile(paraFileString1);
-
-		aOutput = new FileOutputStream(paraFileString2);
-	}
-
+	/**
+	 * 
+	 * @param aIS  jasper report file 
+	 * @param aOS
+	 * @throws Exception
+	 */
 	public JasperReportManager(InputStream aIS, OutputStream aOS) throws Exception {
 		aOutput = aOS;
 		aInput = aIS;

@@ -1,6 +1,6 @@
 v3.2b2(not released yet)
 --
-1. 
+1. new JasperDesignManager class to handle design xml file - 2022/04/10
 
 v3.2b1(not released yet)
 --
