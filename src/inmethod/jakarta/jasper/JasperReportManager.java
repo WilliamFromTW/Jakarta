@@ -8,6 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRBand;
+import net.sf.jasperreports.engine.JRElement;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRStaticText;
+import net.sf.jasperreports.engine.JRTextField;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -16,7 +20,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.util.JRSaver;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.engine.xml.JRXmlWriter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
@@ -29,13 +35,71 @@ public class JasperReportManager {
 	private Connection aConn;
 	private JasperReport report;
 	private JasperPrint jasperPrint;
+	private JasperDesign aJD;
 
-	private JasperReportManager() {
-//		JRXmlLoader.load(null)
+	public JasperReportManager() {
+
 	}
 
-
+	public  void  setJasperDesign(String sXMLFile) throws JRException {
+		aJD = JRXmlLoader.load(sXMLFile);
 	
+	}
+
+	/**
+	 * 
+	 * @param sXMLFile  report location 
+	 * @param sFileOutputStreamPDF   generate report pdf file
+	 * @throws Exception
+	 */
+	public  void  setJasperReport(String sXMLFile, String sFileOutputStreamPDF) throws Exception {
+		report = (JasperReport) JRLoader.loadObjectFromFile(sXMLFile);
+
+		aOutput = new FileOutputStream(sFileOutputStreamPDF);
+	}
+
+	public void saveJasperDesign(String sXMLFile) throws JRException {
+		if( aJD!=null)
+		  JRXmlWriter.writeReport(aJD,sXMLFile,"UTF-8");
+		else throw new JRException("no JasperDesign object");
+	}
+	
+	public void compileJasperReport(String sXMLFile) throws JRException {
+		if( aJD!=null) {
+			
+			//JasperReport aReport = JasperCompileManager.compileReport(aJD);
+			JasperCompileManager.compileReportToFile(aJD,sXMLFile);
+		}
+		else throw new JRException("no JasperDesign object");
+		
+	}
+	
+	public  void addPdfCustomFont() throws JRException {
+		if( aJD==null)  throw new JRException("no JasperDesign object");
+		for( JRBand a:aJD.getAllBands()) {
+	          for( JRElement b: a.getElements()) {
+	        	if(b instanceof JRStaticText) {
+	        		JRStaticText aJRS = ((JRStaticText)b);
+	        		aJRS.setFontName("Arial Unicode MS");
+	        		aJRS.setPdfEmbedded(true);
+	        		aJRS.setPdfFontName("Arial Unicode MS");
+	        		aJRS.setPdfEncoding("Identity-H");
+	        	}else if( b instanceof JRTextField) {
+	        		JRTextField aJRT = ((JRTextField)b);
+	        		aJRT.setFontName("Arial Unicode MS");
+	        		aJRT.setPdfEmbedded(true);
+	        		aJRT.setPdfFontName("Arial Unicode MS");
+	        		aJRT.setPdfEncoding("Identity-H");
+	        	}
+	          }
+		}
+//		JRXmlWriter.writeReport(aJD,sXMLFile,"UTF-8");
+//		System.out.println(aJD.toString());
+//		JRSaver.saveObject(aJD, sXMLFile);
+	       //   JasperReport aReport = JasperCompileManager.compileReport(aJD);
+	     //     JRSaver.saveObject(aReport, sXMLFile);
+	          
+	}
 	
 	public JasperReportManager(String paraFileString1, String paraFileString2) throws Exception {
 		report = (JasperReport) JRLoader.loadObjectFromFile(paraFileString1);
@@ -50,12 +114,21 @@ public class JasperReportManager {
 	}
 
 	public void addParameter(Map<String, String> paraMap) {
+		if( report==null) {
+			System.out.println("no JasperReport object");
+			return;
+		}
 		if (aMap == null)
 			aMap = new HashMap<String, Object>();
 		aMap.putAll(paraMap);
 	}
 
 	public void addParameter(String aKey, Object value) {
+		if( report==null) {
+			System.out.println("no JasperReport object");
+			return;
+		}
+
 		if (aMap == null)
 			aMap = new HashMap<String, Object>();
 		aMap.put(aKey, value);
@@ -66,10 +139,20 @@ public class JasperReportManager {
 	}
 
 	public JRBand getTitle() {
+		if( report==null) {
+			System.out.println("no JasperReport object");
+			return null;
+		}
+
 		return report.getTitle();
 	}
 	
 	public void buildExcel() throws Exception {
+		if( report==null) {
+			System.out.println("no JasperReport object");
+			return;
+		}
+
 		JRXlsxExporter exporter = new JRXlsxExporter();
 
 		jasperPrint = JasperFillManager.fillReport(report, aMap, aConn);
