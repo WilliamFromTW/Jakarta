@@ -12,7 +12,7 @@ public class testJasper {
             String sJRreport = "/tmp/test_data_pdf_font.jasper";
             JasperDesignManager aJDM = new JasperDesignManager(sJRxml);
             aJDM.addPdfCustomFont();
-            aJDM.setImagePath("sImage", "S:/tmp/cropped-kafeiou_logo2.png");
+            aJDM.setImagePath("sImage", "/tmp/cropped-kafeiou_logo2.png");
             aJDM.saveJasperDesign(sJRxmlPdfFont);
             aJDM.compileJasperReport(sJRreport);
             

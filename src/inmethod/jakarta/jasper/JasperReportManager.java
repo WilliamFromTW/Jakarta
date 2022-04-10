@@ -35,7 +35,8 @@ public class JasperReportManager {
 	private Connection aConn;
 	private JasperReport report;
 	private JasperPrint jasperPrint;
-
+    private JRBand[] aAllBrands;
+    
 	private JasperReportManager() {
 
 	}
@@ -50,7 +51,7 @@ public class JasperReportManager {
 	 */
 	public JasperReportManager(String sXMLFile, String sFileOutputStreamPDF) throws Exception {
 		report = (JasperReport) JRLoader.loadObjectFromFile(sXMLFile);
-
+		this.aAllBrands = report.getAllBands();
 		aOutput = new FileOutputStream(sFileOutputStreamPDF);
 	}
 
@@ -91,13 +92,19 @@ public class JasperReportManager {
 		aConn = paraConn;
 	}
 
-	public JRBand getTitle() {
+	public JRElement getElementByKey(String sKey) {
 		if( report==null) {
 			System.out.println("no JasperReport object");
 			return null;
 		}
-
-		return report.getTitle();
+		JRElement aJRE = null;
+        for(JRBand aJRB:this.aAllBrands) {
+        	aJRE = aJRB.getElementByKey(sKey);
+        	if( aJRE!=null ) {
+        		return aJRE;
+        	}
+        }
+		return null;
 	}
 	
 	public void buildExcel() throws Exception {
