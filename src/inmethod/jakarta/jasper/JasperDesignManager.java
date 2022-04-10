@@ -110,15 +110,15 @@ public class JasperDesignManager {
 		for( JRBand a:aJRbrands ) {
 	          for( JRElement b: a.getElements()) {
 	        	if(b instanceof JRStaticText) {
-	        		JRStaticText aJRS = ((JRStaticText)b);
+	        		JRStaticText aJRS = ((JRStaticText)b); 
 	        		aJRS.setFontName("Arial Unicode MS");
-	        		aJRS.setPdfEmbedded(true);
+	        		//aJRS.setPdfEmbedded(true);
 	        		aJRS.setPdfFontName("Arial Unicode MS");
 	        		aJRS.setPdfEncoding("Identity-H");
 	        	}else if( b instanceof JRTextField) {
 	        		JRTextField aJRT = ((JRTextField)b);
 	        		aJRT.setFontName("Arial Unicode MS");
-	        		aJRT.setPdfEmbedded(true);
+	        		//aJRT.setPdfEmbedded(true);
 	        		aJRT.setPdfFontName("Arial Unicode MS");
 	        		aJRT.setPdfEncoding("Identity-H");
 	        	}
