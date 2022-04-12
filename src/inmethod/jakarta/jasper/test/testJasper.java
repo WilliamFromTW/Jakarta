@@ -7,16 +7,16 @@ import inmethod.jakarta.jasper.JasperReportManager;
 public class testJasper {
 	public static void main(String[] args) {
 		try  {
-            String sJRxml = "/tmp/test_data.jrxml";
-            String sJRxmlPdfFont = "/tmp/test_data_pdf_font.jrxml";
-            String sJRreport = "/tmp/test_data_pdf_font.jasper";
+            String sJRxml = "/opt/test_data.jrxml";
+            String sJRxmlPdfFont = "/opt/test_data_pdf_font.jrxml";
+            String sJRreport = "/opt/test_data_pdf_font.jasper";
             JasperDesignManager aJDM = new JasperDesignManager(sJRxml);
             aJDM.addPdfCustomFont();
-            aJDM.setImagePath("sImage", "/tmp/cropped-kafeiou_logo2.png");
+            aJDM.setImagePath("sImage", "/opt/cropped-kafeiou_logo2.png");
             aJDM.saveJasperDesign(sJRxmlPdfFont);
             aJDM.compileJasperReport(sJRreport);
             
-			//JasperReportManager aJasperReportManager = new JasperReportManager("\\tmp\\test_data.jasper", "/tmp/aaa.pdf");
+			//JasperReportManager aJasperReportManager = new JasperReportManager("\\opt\\test_data.jasper", "/opt/aaa.pdf");
 			
 			
 		} catch (Exception ex) {

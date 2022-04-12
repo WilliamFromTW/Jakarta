@@ -14,8 +14,8 @@ import org.apache.poi.hssf.record.*;
 import org.apache.poi.hssf.usermodel.*;
 
 /**
- * create tmp directory in the same drive root directory ( for example: d:/tmp )
- * and copy test files in directory "test_files" to "tmp" directory.
+ * create opt directory in the same drive root directory ( for example: d:/opt )
+ * and copy test files in directory "test_files" to "opt" directory.
  * 
  * @author william chen
  *
@@ -33,7 +33,7 @@ public class testExcel {
 	}
 
 	/**
-	 * 使用 excel 模板, 填入資料後, 再產出新的 excel 文件. excel模板文件請放在 /tmp 目錄下
+	 * 使用 excel 模板, 填入資料後, 再產出新的 excel 文件. excel模板文件請放在 /opt 目錄下
 	 * 
 	 * @param sFileName
 	 */
@@ -47,8 +47,8 @@ public class testExcel {
 		try {
 
 			aFI = new FileInputStream(
-					System.getProperty("file.separator") + "tmp" + System.getProperty("file.separator") + sFileName);
-			aFO = new FileOutputStream(System.getProperty("file.separator") + "tmp"
+					System.getProperty("file.separator") + "opt" + System.getProperty("file.separator") + sFileName);
+			aFO = new FileOutputStream(System.getProperty("file.separator") + "opt"
 					+ System.getProperty("file.separator") + sFileName + "-" + Calendar.getInstance().get(Calendar.YEAR)
 					+ "-" + (Calendar.getInstance().get(Calendar.MONTH) + 1) + "." + sFileExtName);
 
@@ -87,8 +87,8 @@ public class testExcel {
 			aFE.calculateShiftExcel(2, 10, aDS);
 
 			// 圖片測試
-			// aFE.createPic("/tmp/testExcel.jpg", 4,4, 5, 5);
-			aFE.createPic(new FileInputStream(System.getProperty("file.separator") + "tmp" + System.getProperty("file.separator")+"testExcel.jpg"), 5, 5, 6, 6);
+			// aFE.createPic("/opt/testExcel.jpg", 4,4, 5, 5);
+			aFE.createPic(new FileInputStream(System.getProperty("file.separator") + "opt" + System.getProperty("file.separator")+"testExcel.jpg"), 5, 5, 6, 6);
 			aFE.buildExcel();
 			System.out.println("finished!");
 			aFO.flush();
@@ -105,9 +105,9 @@ public class testExcel {
 		try {
 			
 			if( sFileExtName.equalsIgnoreCase("xls"))
-			  aRE = new ReadXLS(new FileInputStream(System.getProperty("file.separator") + "tmp" + System.getProperty("file.separator")+sFileName));
+			  aRE = new ReadXLS(new FileInputStream(System.getProperty("file.separator") + "opt" + System.getProperty("file.separator")+sFileName));
 			else if( sFileExtName.equalsIgnoreCase("xlsx"))
-			  aRE = new ReadXLSX(new FileInputStream(System.getProperty("file.separator") + "tmp" + System.getProperty("file.separator")+sFileName));
+			  aRE = new ReadXLSX(new FileInputStream(System.getProperty("file.separator") + "opt" + System.getProperty("file.separator")+sFileName));
 			else{
 				System.out.println("read excel failed!");
 				return;

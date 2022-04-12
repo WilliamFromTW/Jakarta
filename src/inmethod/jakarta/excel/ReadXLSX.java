@@ -123,7 +123,7 @@ public class ReadXLSX implements IReadExcel{
 	  ReadXLSX aRE = null;
     Vector aExcelReturn = null;
     try{
-      aRE = new ReadXLSX(new FileInputStream("\\tmp\\testShiftExcel.xlsx"));
+      aRE = new ReadXLSX(new FileInputStream("\\opt\\testShiftExcel.xlsx"));
 
       //sample 1
       aExcelReturn = aRE.getAllExcelData();

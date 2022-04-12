@@ -33,9 +33,9 @@ import inmethod.jakarta.word.ICreateDOCX;
 public class testCreateDOCX {
 	public static void main(String[] args) throws IOException {
 
-        String fileName = "/tmp/PR-DCF.docx";
+        String fileName = "/opt/PR-DCF.docx";
         try {
-            ICreateDOCX aCreateDOCX = new CreateDOCX("/tmp/PR-DCF2.docx","/tmp/PR-DCF3.docx");
+            ICreateDOCX aCreateDOCX = new CreateDOCX("/opt/PR-DCF2.docx","/opt/PR-DCF3.docx");
 			aCreateDOCX.addReplace("機型", "咖啡偶\r\n(一)asdf\r\n(二)asdfasdf");
 			aCreateDOCX.buildDOCX();
 		} catch (Exception e1) {

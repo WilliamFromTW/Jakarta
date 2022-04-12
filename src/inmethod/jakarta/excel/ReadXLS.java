@@ -125,8 +125,8 @@ public class ReadXLS implements IReadExcel{
     ReadXLS aRE = null;
     Vector aExcelReturn = null;
     try{
-//      aRE = new ReadExcel(new FileInputStream("/tmp/TC_PM_FILE.xls"));
-      aRE = new ReadXLS(new FileInputStream("c:\\temp\\data.xls"));
+//      aRE = new ReadExcel(new FileInputStream("/opt/TC_PM_FILE.xls"));
+      aRE = new ReadXLS(new FileInputStream("c:\\opt\\data.xls"));
 
       //sample 1
       aExcelReturn = aRE.getAllExcelData();

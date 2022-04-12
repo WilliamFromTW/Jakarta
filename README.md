@@ -1,12 +1,12 @@
 ## How To Compile
 1. j2se version 8 or above    
-2. InMethod Tools 2.01 or above    
+2. InMethod Tools 2.04 or above    
 3. include all jar files in directory lib/     
 4. gradle 5.6.2 or above    
    gradle jar => generate jar file    
    gradle javadoc => generate java document files    
-5. if use test sample file , create tmp directory in the same drive root directory ( for example:  d:/tmp ) 
-   and copy test files  in directory "test_files" to "tmp" directory.
+5. if use test sample file , create opt directory in the same drive root directory ( for example:  d:/otp  or /opt) 
+   and copy test files  in directory "opt" to "opt" directory.
    
 ## lib for create/read excel
    poi-xxx.jar   

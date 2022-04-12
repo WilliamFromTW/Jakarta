@@ -181,7 +181,7 @@ public class FTPDownload{
   public static void main(String argv[]){
     FTPDownload aFtp = new FTPDownload("10.192.130.1","guest","1111");
     aFtp.changeWorkingDirectory("download");
-    aFtp.downloadAllFiles("c:/client/b");
+    aFtp.downloadAllFiles("/opt/download");
     aFtp.disconnect();
   }
 

@@ -12,7 +12,7 @@ public class testPdfUtility {
 	}
 
 	public static void readFieldValues() {
-		String sSrc = "test_files/certificate/TEST.pdf";
+		String sSrc = "opt/certificate/TEST.pdf";
 		try {
 			
 			InputStream aIS = new FileInputStream(new File(sSrc));

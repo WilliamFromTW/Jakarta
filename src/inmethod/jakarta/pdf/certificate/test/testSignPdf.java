@@ -24,9 +24,9 @@ public class testSignPdf {
 	}
 
 	public static void iText() {
-		String sSrc = "/media/veracrypt2/william.fromtw@gmail.com/Dropbox/git/src/inmethod/Java/InMethodJakarta/test_files/certificate/TEST.pdf";
-		String sDest = "/media/veracrypt2/william.fromtw@gmail.com/Dropbox/git/src/inmethod/Java/InMethodJakarta/test_files/certificate/TEST_SIGNED.pdf";
-		String sPFX = "/media/veracrypt2/william.fromtw@gmail.com/Dropbox/git/src/inmethod/Java/InMethodJakarta/test_files/certificate/920405.pfx";
+		String sSrc = "/opt/certificate/TEST.pdf";
+		String sDest = "/opt/certificate/TEST_SIGNED.pdf";
+		String sPFX = "/opt/certificate/920405.pfx";
 		try {
 			
 			Calendar aC = Calendar.getInstance();

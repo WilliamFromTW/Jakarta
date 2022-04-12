@@ -1,7 +1,8 @@
 v3.2b2(not released yet)
 --
 1. new JasperDesignManager class to handle design xml file - 2022/04/10
-
+2. change test file directory from tmp to opt - 2022/04/12
+ 
 v3.2b1(not released yet)
 --
 1. poi bump to 5.0.0

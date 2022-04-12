@@ -23,7 +23,7 @@
 			</staticText>
 			<image evaluationTime="Auto">
 				<reportElement key="sImage" x="309" y="18" width="121" height="32" uuid="16b9d644-eaa1-45cf-8f3d-637e6546e794"/>
-				<imageExpression><![CDATA["S:/tmp/cropped-kafeiou_logo2.png"]]></imageExpression>
+				<imageExpression><![CDATA["S:/opt/cropped-kafeiou_logo2.png"]]></imageExpression>
 			</image>
 		</band>
 	</title>
