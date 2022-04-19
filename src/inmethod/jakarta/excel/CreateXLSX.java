@@ -64,6 +64,7 @@ public class CreateXLSX  implements ICreateExcel {
 	private SXSSFCell headerCell = null;
 	private SXSSFDrawing patriarch = null;
 	private ArrayList<Integer> aDateColumnAlert = new ArrayList<Integer>();
+	private int iMaxColumnsAutoSizing=0;
 	
 	/**
 	 * if column is date format and before report date , cell font will be  red color
@@ -379,10 +380,17 @@ public class CreateXLSX  implements ICreateExcel {
 	 */
 	public void buildExcel() {
 		try {
+			sheet.trackAllColumnsForAutoSizing();		
+			for(int i=0;i<iMaxColumnsAutoSizing;i++)
+				sheet.autoSizeColumn(i);
 			workBook.write(aOutput);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	public void setMaxColumnsAutoSizing(int iMax) {
+		iMaxColumnsAutoSizing = iMax;
 	}
 
 	/**
@@ -421,9 +429,12 @@ public class CreateXLSX  implements ICreateExcel {
 		  aCell.setCellStyle(style);
 		  aCell.setCellValue(new XSSFRichTextString((String) aVector.get(0)));
 		}else {
+			  if( getAutoSizeColumn() ) {
+					if(getCurrentSheet().isColumnTrackedForAutoSizing(aCell.getColumnIndex()))			  
+				  getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
+			  }  
 		  aCell.setCellStyle(style);
 		  aCell.setCellValue(new XSSFRichTextString((String) aVector.get(0)));
-		  if( getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
 		}
 
 	}
@@ -485,9 +496,12 @@ public class CreateXLSX  implements ICreateExcel {
 		  aCell.setCellStyle(style);
 		  aCell.setCellValue(new XSSFRichTextString(sValue));
 		}else {
+			  if( getAutoSizeColumn() ) { 
+					if(getCurrentSheet().isColumnTrackedForAutoSizing(aCell.getColumnIndex()))			  
+						getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
+			  }  
 		  aCell.setCellStyle(style);
   		  aCell.setCellValue(new XSSFRichTextString(sValue));
-		  if( getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
 		}	
 	}
 
@@ -514,9 +528,12 @@ public class CreateXLSX  implements ICreateExcel {
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.intValue());
 		}else {
+			  if( getAutoSizeColumn() ) { 
+					if(getCurrentSheet().isColumnTrackedForAutoSizing(aCell.getColumnIndex()))			  
+						getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
+			  }  
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.intValue());
-		  if( getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
 		}
 
 	}
@@ -545,9 +562,12 @@ public class CreateXLSX  implements ICreateExcel {
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.doubleValue());
 		}else {
+			  if( getAutoSizeColumn() ) { 
+					if(getCurrentSheet().isColumnTrackedForAutoSizing(aCell.getColumnIndex()))			  
+						getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
+			  }  
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.doubleValue());
-		  if( getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
 		}
 
 	}
@@ -580,9 +600,12 @@ public class CreateXLSX  implements ICreateExcel {
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.doubleValue());
 		}else {
+			  if( getAutoSizeColumn() ) {
+					if(getCurrentSheet().isColumnTrackedForAutoSizing(aCell.getColumnIndex()))			  
+						getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
+			  }
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.doubleValue());
-		  if( getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
 		}
 	}
 
@@ -694,12 +717,20 @@ public class CreateXLSX  implements ICreateExcel {
 						aTempCell = aTempRow.getCell(i);
 
 					obj = aTempVector.get((int) i);
+					if( !getAutoWrapText() && getAutoSizeColumn() ) {
+						if(getCurrentSheet().isColumnTrackedForAutoSizing(i))			  
+							getCurrentSheet().autoSizeColumn(i);
+					}
+					
 					if (iCheckCells > 0)
 						if (sCheckString1.equals(sCheckString2))
 							if ((i + 1) <= iCheckCells) {
+								if( getAutoSizeColumn() ) {
+									if(getCurrentSheet().isColumnTrackedForAutoSizing(i))			  
+										getCurrentSheet().autoSizeColumn(i);
+								}
 								aTempCell.setCellStyle(style);
 								aTempCell.setCellValue(new XSSFRichTextString(""));
-								if( getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(i);
 								continue;
 							}
 
@@ -722,7 +753,6 @@ public class CreateXLSX  implements ICreateExcel {
 						aTempCell.setCellStyle(sDecimalCS);
 						aTempCell.setCellValue(((Short) obj).shortValue());
 					}
-					if( !getAutoWrapText() && getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(i);
 				}
 				sCheckString1 = sCheckString2;
 
@@ -847,6 +877,10 @@ public class CreateXLSX  implements ICreateExcel {
 					else
 						sData = aRS.getString(sColumnName);
                     Date aDate = inmethod.commons.util.DateUtil.convertToDate(sData);
+					if( !getAutoWrapText() && getAutoSizeColumn() ) {
+						if(getCurrentSheet().isColumnTrackedForAutoSizing(i))			  
+							getCurrentSheet().autoSizeColumn(i);
+					}
 
 					 if(  inmethod.commons.util.DateUtil.convertToDate(sData) instanceof Date  ) {
 	            			CellStyle dateStyle = getCurrentWorkBook().createCellStyle();
@@ -917,7 +951,6 @@ public class CreateXLSX  implements ICreateExcel {
 						}
 
 					}
-					if( !getAutoWrapText() && getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(i);
 
 				}
 
@@ -1026,6 +1059,10 @@ public class CreateXLSX  implements ICreateExcel {
                     if( sData==null) sData = "";
                 	//System.out.print(sData + " is Date ? ");
                     Date aDate = inmethod.commons.util.DateUtil.convertToDate(sData);
+					if( !getAutoWrapText() && getAutoSizeColumn() ) {
+						if(getCurrentSheet().isColumnTrackedForAutoSizing(i))
+						getCurrentSheet().autoSizeColumn(i);
+					}		
                     if( aDate instanceof Date  ) {
             			CellStyle dateStyle = getCurrentWorkBook().createCellStyle();
             			CreationHelper createHelper = getCurrentWorkBook().getCreationHelper();
@@ -1095,7 +1132,6 @@ public class CreateXLSX  implements ICreateExcel {
 						}
 
 					}
-					if( !getAutoWrapText() && getAutoSizeColumn() ) getCurrentSheet().autoSizeColumn(i);
                     
 				}
 				sCheckString1 = sCheckString2;

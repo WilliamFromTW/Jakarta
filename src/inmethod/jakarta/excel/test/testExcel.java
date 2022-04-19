@@ -9,7 +9,6 @@ import inmethod.commons.rdb.*;
 import inmethod.commons.util.FileTool;
 
 import org.apache.poi.hssf.model.*;
-import org.apache.poi.hssf.dev.*;
 import org.apache.poi.hssf.record.*;
 import org.apache.poi.hssf.usermodel.*;
 

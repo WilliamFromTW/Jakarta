@@ -1,21 +1,15 @@
 package inmethod.jakarta.excel;
-import org.apache.poi.hssf.util.*;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.hssf.model.*;
-import org.apache.poi.hssf.dev.*;
-import org.apache.poi.hssf.record.*;
 import org.apache.poi.hssf.usermodel.*;
 import java.io.*;
 import java.util.*;
-import inmethod.commons.util.*;
 import inmethod.commons.rdb.DataSet;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import inmethod.commons.rdb.*;
 
 
 
@@ -28,13 +22,11 @@ public class CreateXLS implements ICreateExcel {
   private int iNextRow;
 
   private boolean bolPrintResultSetHeader;
-  private HSSFCell aCell;
   private HSSFRow headerRow = null;
   private HSSFCell headerCell = null;
   private HSSFPatriarch patriarch = null;
   private String sCurrencyFormat = "#,##0.0";
   private String sIntCurrencyFormat = "#,##0";
-  private String sSpaceInsteadOf = "";
   private CreateXLS(){}
 
   public CreateXLS(OutputStream aOS){
