@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFCell;
@@ -44,8 +45,7 @@ public class CreateXLSX  implements ICreateExcel {
 	private boolean bolAutoWrapText = false;
 	private boolean bolAutoSizeColumn = true;
 	private String sDecimalFormat = "#,##0.0##";
-	private String sIntegerFormat = "#,##0";
-	
+	private String sIntegerFormat = "#,##0";	
 
 	private SXSSFWorkbook workBook;
 	private SXSSFSheet sheet;
@@ -325,7 +325,7 @@ public class CreateXLSX  implements ICreateExcel {
 						sCheckString2 = sCheckString2 + aRS.getString(i + 1);
 				}
 				for (short i = 0; i < metaData.getColumnCount(); i++) {
-					sDataTypeName = getDataType(metaData.getColumnType((int) (i + 1)));
+					sDataTypeName = getDataType(metaData.getColumnType((int) (i + 1)) , metaData.getScale((i+1)) );
 					sColumnName = metaData.getColumnName((int) (i + 1));
 					sData = aRS.getString(sColumnName);
 					if (iCheckCells > 0)
@@ -369,26 +369,53 @@ public class CreateXLSX  implements ICreateExcel {
 	 */
 	public void buildExcel() {
 		try {
-			int iNumberOfSheets = workBook.getNumberOfSheets();
-			SXSSFSheet tmpSheet;
-			int[] iColRow;
-System.out.println("iNumberOfSheets"+iNumberOfSheets);
-			for(int i =0 ;i<iNumberOfSheets;i++) {
-				tmpSheet = workBook.getSheetAt(i);
+			if( getAutoSizeColumn()  ) {
+			  int iNumberOfSheets = workBook.getNumberOfSheets();
+			  SXSSFSheet tmpSheet;
+			  int[] iColRow;
+              // System.out.println("iNumberOfSheets"+iNumberOfSheets);
+			  for(int i =0 ;i<iNumberOfSheets;i++) {
+			    tmpSheet = workBook.getSheetAt(i);
 				iColRow = maxExcelrowcol(tmpSheet);
-				System.out.println("iColRow"+iColRow[0]);
-
-				tmpSheet.trackAllColumnsForAutoSizing();						   
-			   for(int j=0;j<=iColRow[0];j++) {
+				System.out.println("MaxCol="+iColRow[0] +", MaxRow="+iColRow[1]);
+				tmpSheet.trackAllColumnsForAutoSizing();						  
+			    for(int j=0;j<=iColRow[0];j++) {
 				   tmpSheet.autoSizeColumn(j);
-			   }	   
-			}			
+				   
+			    }
+			  }
+			
+			     
+			    
+			 			 
+			}
 			workBook.write(aOutput);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 	
+	
+	/**
+	 * Get the index of the merged cell in all the merged cells
+	 * if the given cell is in a merged cell.
+	 * Otherwise, it will return null.
+	 *
+	 * @param sheet  The Sheet object
+	 * @param row    The row number of this cell
+	 * @param column The column number of this cell
+	 * @return The index of all merged cells, which will be useful for {@link Sheet#getMergedRegion(int)}
+	 */
+	private boolean getIndexIfCellIsInMergedCells(SXSSFSheet sheet, int row, int column) {
+	    int numberOfMergedRegions = sheet.getNumMergedRegions();
+
+	    for (int i = 0; i < numberOfMergedRegions; i++) {
+	        CellRangeAddress mergedCell = sheet.getMergedRegion(i);
+
+	       return mergedCell.isInRange(row, column);
+	    }
+	    return false;
+	}	
 	/**
 	 * Get next row .
 	 */
@@ -868,7 +895,7 @@ System.out.println("iNumberOfSheets"+iNumberOfSheets);
 					else
 						aTempCell = aTempRow.getCell(i);
 //					System.out.println("getColumnType="+metaData.getColumnType((int) (i + 1)));
-					sDataTypeName = getDataType(metaData.getColumnType((int) (i + 1)));
+					sDataTypeName = getDataType(metaData.getColumnType((int) (i + 1)), metaData.getScale((i+1)));
 	//				System.out.println("getColumnType="+metaData.getColumnType((int) (i + 1))+",DataTypeName="+sDataTypeName);
 					sColumnName = metaData.getColumnName((int) (i + 1));
 					if (iCheckCells > 0)
@@ -1044,7 +1071,7 @@ System.out.println("iNumberOfSheets"+iNumberOfSheets);
 				for (short i = 0; i < metaData.getColumnCount(); i++) {
 					aTempCell = aTempRow.createCell(i);
 					//System.out.println("getColumnType="+metaData.getColumnType((int) (i + 1)));
-					sDataTypeName = getDataType(metaData.getColumnType((int) (i + 1)));
+					sDataTypeName = getDataType(metaData.getColumnType((int) (i + 1)), metaData.getScale((i+1)));
 					//System.out.println("getColumnType="+metaData.getColumnType((int) (i + 1))+",DataTypeName="+sDataTypeName);
 					sColumnName = metaData.getColumnName((int) (i + 1));
 					if (iCheckCells > 0)
@@ -1256,6 +1283,10 @@ System.out.println("iNumberOfSheets"+iNumberOfSheets);
 			sDecimalCS.setDataFormat(df.getFormat(sDecimalFormat));
 			CellStyle sIntegerCS = getCurrentWorkBook().createCellStyle();
 			sIntegerCS.setDataFormat(df.getFormat(sIntegerFormat));
+			Font font = getCurrentWorkBook().createFont();
+			font.setFontName("新細明體");
+			CellStyle sStringStyle = getCurrentWorkBook().createCellStyle();
+			sStringStyle.setFont(font);			
 
 			while (aDS.next()) {
 				aTempVector = (Vector) aDS.getData();
@@ -1271,6 +1302,8 @@ System.out.println("iNumberOfSheets"+iNumberOfSheets);
 					if (iCheckCells > 0)
 						if (sCheckString1.equals(sCheckString2))
 							if ((i + 1) <= iCheckCells) {
+								aTempCell.setCellType(CellType.STRING);
+								aTempCell.setCellStyle(sStringStyle);
 								aTempCell.setCellValue(new XSSFRichTextString(""));
 								continue;
 							}
@@ -1311,7 +1344,7 @@ System.out.println("iNumberOfSheets"+iNumberOfSheets);
 	 * @param iSqlType
 	 * @return String
 	 */
-	private String getDataType(int iSqlType) {
+	private String getDataType(int iSqlType,int iScale) {
 		String strObjectType = null;
 		switch (iSqlType) {
 		// suppose bigint, integer , tinyint to be Integer
@@ -1330,7 +1363,10 @@ System.out.println("iNumberOfSheets"+iNumberOfSheets);
 		case java.sql.Types.DOUBLE:
 		case java.sql.Types.DECIMAL:
 		case java.sql.Types.NUMERIC:
-			strObjectType = "Double";
+			if( iScale==0)
+			  strObjectType = "Integer";
+			else	
+			  strObjectType = "Double";
 			break;
 		// char,varbinary,date,varchar to String
 		case java.sql.Types.CHAR:
