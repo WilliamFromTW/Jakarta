@@ -10,15 +10,15 @@ import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Vector;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -29,19 +29,8 @@ import org.apache.poi.xssf.streaming.SXSSFPicture;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFDataFormat;
-import org.apache.poi.xssf.usermodel.XSSFDrawing;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFPicture;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-
 import inmethod.commons.rdb.DataSet;
 
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
@@ -53,7 +42,7 @@ public class CreateXLSX  implements ICreateExcel {
 
 	private boolean bolPrintResultSetHeader;
 	private boolean bolAutoWrapText = false;
-	private boolean bolAutoSizeColumn = false;
+	private boolean bolAutoSizeColumn = true;
 	private String sDecimalFormat = "#,##0.0##";
 	private String sIntegerFormat = "#,##0";
 	
@@ -64,16 +53,16 @@ public class CreateXLSX  implements ICreateExcel {
 	private SXSSFCell headerCell = null;
 	private SXSSFDrawing patriarch = null;
 	private ArrayList<Integer> aDateColumnAlert = new ArrayList<Integer>();
-	private int iMaxColumnsAutoSizing=0;
 	
 	/**
 	 * if column is date format and before report date , cell font will be  red color
 	 * @param iColumn
 	 */
 	public void addDateColumnAlter(int iColumn) {
-		aDateColumnAlert.add(new Integer(iColumn));
+		aDateColumnAlert.add(Integer.valueOf(iColumn));
 	}
 	
+	@SuppressWarnings("unused")
 	private CreateXLSX() {
 	}
 
@@ -309,7 +298,7 @@ public class CreateXLSX  implements ICreateExcel {
 		int iCheckCells = checkCells;
 		String sCheckString1 = "begin";
 		String sCheckString2 = null;
-		XSSFCell aTempCell = null;
+		SXSSFCell aTempCell = null;
 		Object obj = null;
 		String sColumnTypeName = null;
 		String sColumnName = null;
@@ -380,19 +369,26 @@ public class CreateXLSX  implements ICreateExcel {
 	 */
 	public void buildExcel() {
 		try {
-			sheet.trackAllColumnsForAutoSizing();		
-			for(int i=0;i<iMaxColumnsAutoSizing;i++)
-				sheet.autoSizeColumn(i);
+			int iNumberOfSheets = workBook.getNumberOfSheets();
+			SXSSFSheet tmpSheet;
+			int[] iColRow;
+System.out.println("iNumberOfSheets"+iNumberOfSheets);
+			for(int i =0 ;i<iNumberOfSheets;i++) {
+				tmpSheet = workBook.getSheetAt(i);
+				iColRow = maxExcelrowcol(tmpSheet);
+				System.out.println("iColRow"+iColRow[0]);
+
+				tmpSheet.trackAllColumnsForAutoSizing();						   
+			   for(int j=0;j<=iColRow[0];j++) {
+				   tmpSheet.autoSizeColumn(j);
+			   }	   
+			}			
 			workBook.write(aOutput);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 	
-	public void setMaxColumnsAutoSizing(int iMax) {
-		iMaxColumnsAutoSizing = iMax;
-	}
-
 	/**
 	 * Get next row .
 	 */
@@ -401,6 +397,43 @@ public class CreateXLSX  implements ICreateExcel {
 
 	}
 
+	/**
+	 * 
+	 * @param tmpSheet
+	 * @return int[0] col ,  int[1] row;
+	 */
+	private int[] maxExcelrowcol(SXSSFSheet tmpSheet) {
+
+        int row,col;
+        int[] iReturn = new int[2];
+        iReturn[0] = 0;
+        iReturn[1] = 0;
+		//Row iterator 
+		Iterator rowIter = sheet.rowIterator();
+
+		while (rowIter.hasNext()) {
+			SXSSFRow myRow = (SXSSFRow) rowIter.next();
+		    //Cell iterator for iterating from cell to next cell of a row
+		    Iterator cellIter = myRow.cellIterator();
+		    while (cellIter.hasNext()) {
+		        Cell myCell = (Cell) cellIter.next();
+
+		        row = myCell.getRowIndex();
+		        col = myCell.getColumnIndex();
+		        
+		        if ( iReturn[1]  < row) {
+		        	iReturn[1] = row;
+		        }
+
+		        if (  iReturn[0]  < col) {
+		        	 iReturn[0] = col;
+		        }
+		    }
+		}
+		return iReturn;
+		
+	}	
+	
 	/**
 	 * write value to specify row and column
 	 * 
@@ -429,10 +462,6 @@ public class CreateXLSX  implements ICreateExcel {
 		  aCell.setCellStyle(style);
 		  aCell.setCellValue(new XSSFRichTextString((String) aVector.get(0)));
 		}else {
-			  if( getAutoSizeColumn() ) {
-					if(getCurrentSheet().isColumnTrackedForAutoSizing(aCell.getColumnIndex()))			  
-				  getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
-			  }  
 		  aCell.setCellStyle(style);
 		  aCell.setCellValue(new XSSFRichTextString((String) aVector.get(0)));
 		}
@@ -496,10 +525,6 @@ public class CreateXLSX  implements ICreateExcel {
 		  aCell.setCellStyle(style);
 		  aCell.setCellValue(new XSSFRichTextString(sValue));
 		}else {
-			  if( getAutoSizeColumn() ) { 
-					if(getCurrentSheet().isColumnTrackedForAutoSizing(aCell.getColumnIndex()))			  
-						getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
-			  }  
 		  aCell.setCellStyle(style);
   		  aCell.setCellValue(new XSSFRichTextString(sValue));
 		}	
@@ -528,10 +553,6 @@ public class CreateXLSX  implements ICreateExcel {
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.intValue());
 		}else {
-			  if( getAutoSizeColumn() ) { 
-					if(getCurrentSheet().isColumnTrackedForAutoSizing(aCell.getColumnIndex()))			  
-						getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
-			  }  
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.intValue());
 		}
@@ -562,10 +583,6 @@ public class CreateXLSX  implements ICreateExcel {
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.doubleValue());
 		}else {
-			  if( getAutoSizeColumn() ) { 
-					if(getCurrentSheet().isColumnTrackedForAutoSizing(aCell.getColumnIndex()))			  
-						getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
-			  }  
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.doubleValue());
 		}
@@ -600,10 +617,6 @@ public class CreateXLSX  implements ICreateExcel {
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.doubleValue());
 		}else {
-			  if( getAutoSizeColumn() ) {
-					if(getCurrentSheet().isColumnTrackedForAutoSizing(aCell.getColumnIndex()))			  
-						getCurrentSheet().autoSizeColumn(aCell.getColumnIndex());
-			  }
 		  aCell.setCellStyle(cs);
 		  aCell.setCellValue(dValue.doubleValue());
 		}
@@ -717,18 +730,10 @@ public class CreateXLSX  implements ICreateExcel {
 						aTempCell = aTempRow.getCell(i);
 
 					obj = aTempVector.get((int) i);
-					if( !getAutoWrapText() && getAutoSizeColumn() ) {
-						if(getCurrentSheet().isColumnTrackedForAutoSizing(i))			  
-							getCurrentSheet().autoSizeColumn(i);
-					}
 					
 					if (iCheckCells > 0)
 						if (sCheckString1.equals(sCheckString2))
 							if ((i + 1) <= iCheckCells) {
-								if( getAutoSizeColumn() ) {
-									if(getCurrentSheet().isColumnTrackedForAutoSizing(i))			  
-										getCurrentSheet().autoSizeColumn(i);
-								}
 								aTempCell.setCellStyle(style);
 								aTempCell.setCellValue(new XSSFRichTextString(""));
 								continue;
@@ -877,10 +882,6 @@ public class CreateXLSX  implements ICreateExcel {
 					else
 						sData = aRS.getString(sColumnName);
                     Date aDate = inmethod.commons.util.DateUtil.convertToDate(sData);
-					if( !getAutoWrapText() && getAutoSizeColumn() ) {
-						if(getCurrentSheet().isColumnTrackedForAutoSizing(i))			  
-							getCurrentSheet().autoSizeColumn(i);
-					}
 
 					 if(  inmethod.commons.util.DateUtil.convertToDate(sData) instanceof Date  ) {
 	            			CellStyle dateStyle = getCurrentWorkBook().createCellStyle();
@@ -1059,10 +1060,6 @@ public class CreateXLSX  implements ICreateExcel {
                     if( sData==null) sData = "";
                 	//System.out.print(sData + " is Date ? ");
                     Date aDate = inmethod.commons.util.DateUtil.convertToDate(sData);
-					if( !getAutoWrapText() && getAutoSizeColumn() ) {
-						if(getCurrentSheet().isColumnTrackedForAutoSizing(i))
-						getCurrentSheet().autoSizeColumn(i);
-					}		
                     if( aDate instanceof Date  ) {
             			CellStyle dateStyle = getCurrentWorkBook().createCellStyle();
             			CreationHelper createHelper = getCurrentWorkBook().getCreationHelper();
