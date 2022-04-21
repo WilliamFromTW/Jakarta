@@ -244,7 +244,7 @@ public class CreateXLS implements ICreateExcel {
               sCheckString2 = sCheckString2 + aRS.getString(i+1);
         }
         for(short i=0;i<metaData.getColumnCount() ;i++){
-          sDataTypeName = getDataType( metaData.getColumnType((int)(i+1)) );
+          sDataTypeName = getDataType( metaData.getColumnType((int)(i+1)), metaData.getScale((i + 1)) );
           sColumnName = metaData.getColumnName( (int) (i+1));
           sData = aRS.getString(sColumnName);
           if( iCheckCells>0 )
@@ -648,7 +648,7 @@ public class CreateXLS implements ICreateExcel {
           aTempCell = aTempRow.createCell(i);
           else
           aTempCell = aTempRow.getCell(i);
-          sDataTypeName = getDataType( metaData.getColumnType((int)(i+1)) );
+          sDataTypeName = getDataType( metaData.getColumnType((int)(i+1)), metaData.getScale((i + 1)) );
           sColumnName = metaData.getColumnName( (int) (i+1));
           if( iCheckCells>0 )
             if(sCheckString1.equals(sCheckString2)){
@@ -760,7 +760,7 @@ public class CreateXLS implements ICreateExcel {
         aTempRow = getNextRow();
         for(short i=0;i<metaData.getColumnCount() ;i++){
           aTempCell = aTempRow.createCell(i);
-          sDataTypeName = getDataType( metaData.getColumnType((int)(i+1)) );
+          sDataTypeName = getDataType( metaData.getColumnType((int)(i+1)), metaData.getScale((i + 1)) );
           sColumnName = metaData.getColumnName( (int) (i+1));
           if( iCheckCells>0 )
             if(sCheckString1.equals(sCheckString2)){
@@ -969,7 +969,7 @@ private  int loadPicture( InputStream aIS, HSSFWorkbook wb ) throws IOException
    * @param iSqlType
    * @return String
    */
-  private String getDataType(int iSqlType){
+  private String getDataType(int iSqlType, int iScale){
     String strObjectType = null;
     switch(iSqlType){
       // suppose bigint, integer , tinyint to be Integer
@@ -982,13 +982,19 @@ private  int loadPicture( InputStream aIS, HSSFWorkbook wb ) throws IOException
         break;
       // float
       case java.sql.Types.FLOAT:
-        strObjectType = "Float";
+			if (iScale == 0)
+				strObjectType = "Integer";
+			else
+			  strObjectType = "Float";
         break;
       // double, decimal convert to Double
       case java.sql.Types.DOUBLE:
       case java.sql.Types.DECIMAL:
       case java.sql.Types.NUMERIC:
-        strObjectType = "Double";
+			if (iScale == 0)
+				strObjectType = "Integer";
+			else
+				strObjectType = "Double";
         break;
       // char,varbinary,date,varchar to String
       case java.sql.Types.CHAR:
