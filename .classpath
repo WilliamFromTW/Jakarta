@@ -28,7 +28,6 @@
 	<classpathentry kind="lib" path="lib/itext/itext7-sign-7.1.5.jar"/>
 	<classpathentry kind="lib" path="lib/itext/itextasian-1.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/itext/itextpdf-5.5.13.jar"/>
-	<classpathentry kind="lib" path="lib/InMethodTools-2.04-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/commons-compress-1.20.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.15.jar"/>
 	<classpathentry kind="lib" path="lib/curvesapi-1.06.jar"/>
@@ -48,5 +47,6 @@
 	<classpathentry kind="lib" path="lib/poi-ooxml-full-5.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/poi-scratchpad-5.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/xmlbeans-5.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/InMethodTools-2.04.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
