@@ -291,14 +291,19 @@ public class GitUtil {
 		try {
 
 			if (sUserName != null && sPasswd != null) {
+				SSLContext sc = SSLContext.getInstance("SSL");
 
+				sc.init(null, null, new java.security.SecureRandom());
+				
+				HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+				
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
 
 				Git.lsRemoteRepository().setRemote(sRemoteUrl).setCredentialsProvider(cp).call();
 			} else
 				Git.lsRemoteRepository().setRemote(sRemoteUrl).call();
 			return true;
-		} catch (GitAPIException e) {
+		} catch (Exception e) {
 			 e.printStackTrace();
 			return false;
 		}
@@ -564,6 +569,57 @@ public class GitUtil {
 	}
 
 	/**
+	 * 
+	 * @param sRemote
+	 * @param sUserName
+	 * @param sPasswd
+	 * @return
+	 */
+	public boolean pushIgnoreCertification(String sRemote, String sUserName, String sPasswd) {
+		try {
+			if (sUserName != null && sPasswd != null) {
+				X509TrustManager a = new X509TrustManager() {
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+
+					public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+
+					public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+					}
+				};
+				TrustManager[] trustAllCerts = new TrustManager[] { a };
+
+				try {
+					SSLContext sc = SSLContext.getInstance("SSL");
+					sc.init(null, trustAllCerts, new java.security.SecureRandom());
+					HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+				} catch (GeneralSecurityException e) {
+					// e.printStackTrace();
+				}
+				HostnameVerifier allHostsValid = new HostnameVerifier() {
+					public boolean verify(String hostname, SSLSession session) {
+						return true;
+					}
+				};
+				HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
+				git.push().setCredentialsProvider(cp).setRemote(sRemote).call();
+			} else {
+				git.push().setRemote(sRemote).call();
+
+			}
+			return true;
+		} catch (Exception ee) {
+			ee.printStackTrace();
+		}
+		return false;
+
+	}
+	
+	
+	/**
 	 * No Need for user name and password.
 	 * 
 	 * @return
@@ -600,6 +656,37 @@ public class GitUtil {
 	 * @return
 	 */
 	public boolean pull(String sBranch, String sUserName, String sPasswd) {
+		try {
+			if (sUserName != null && sPasswd != null) {
+
+				try {
+					SSLContext sc = SSLContext.getInstance("SSL");
+					sc.init(null, null, new java.security.SecureRandom());
+					HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+				} catch (GeneralSecurityException e) {
+					// e.printStackTrace();
+				}
+
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
+				git.pull().setCredentialsProvider(cp).setRemoteBranchName(sBranch).call();
+			} else
+				git.pull().setRemoteBranchName(sBranch).call();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * update must apply user id and password.
+	 * 
+	 * @param sBranch
+	 * @param sUserName
+	 * @param sPasswd
+	 * @return
+	 */
+	public boolean pullIgnoreCertification(String sBranch, String sUserName, String sPasswd) {
 		try {
 			if (sUserName != null && sPasswd != null) {
 				X509TrustManager a = new X509TrustManager() {
@@ -639,7 +726,8 @@ public class GitUtil {
 			return false;
 		}
 	}
-
+	
+	
 	/**
 	 * check local directory is git repository.
 	 * 
@@ -850,6 +938,35 @@ public class GitUtil {
 		Collection<Ref> refs;
 		List<String> branches = new ArrayList<String>();
 		try {
+	
+
+			try {
+				SSLContext sc = SSLContext.getInstance("SSL");
+				sc.init(null, null, new java.security.SecureRandom());
+				HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			} catch (GeneralSecurityException e) {
+				// e.printStackTrace();
+			}
+	
+
+			CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPassword);
+			refs = Git.lsRemoteRepository().setHeads(true).setRemote(sRemoteUrl).setCredentialsProvider(cp).call();
+			for (Ref ref : refs) {
+				branches.add(ref.getName().substring(ref.getName().lastIndexOf("/") + 1, ref.getName().length()));
+			}
+			Collections.sort(branches);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return branches;
+	}
+
+	public List<String> fetchGitBranchesIgnoreCertification(String sUserName, String sPassword) {
+
+		Collection<Ref> refs;
+		List<String> branches = new ArrayList<String>();
+		try {
 			X509TrustManager a = new X509TrustManager() {
 				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 					return null;
@@ -889,7 +1006,8 @@ public class GitUtil {
 
 		return branches;
 	}
-
+	
+	
 	public void commitHistory()
 			throws NoHeadException, GitAPIException, IncorrectObjectTypeException, CorruptObjectException, IOException {
 		Iterable<RevCommit> logs = git.log().call();
