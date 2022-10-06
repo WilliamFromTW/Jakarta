@@ -19,8 +19,10 @@ import javax.net.ssl.X509TrustManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.Edit;
@@ -108,6 +110,47 @@ public class GitUtil {
 		try {
 			if (sUserName != null && sPasswd != null) {
 
+				// Install the all-trusting trust manager
+	
+					SSLContext sc = SSLContext.getInstance("SSL");
+
+					sc.init(null, null, new java.security.SecureRandom());
+					
+					HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+	
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
+
+				Git.cloneRepository().setURI(sRemoteUrl).setDirectory(new File(sLocalDirectory))
+						.setCredentialsProvider(cp).setCloneAllBranches(true).call();
+			} else {
+				Git.cloneRepository().setURI(sRemoteUrl).setDirectory(new File(sLocalDirectory))
+						.setCloneAllBranches(true).call();
+
+			}
+			if (git == null) {
+				aLocalGitFile = new File(sLocalDirectory + "/.git");
+				git = Git.open(aLocalGitFile);
+
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * clone from remote repository to local repository
+	 * 
+	 * @param sUserName
+	 * @param sPasswd
+	 * @return
+	 */
+	public boolean cloneIgnoreCertification(String sUserName, String sPasswd) {
+
+		try {
+			if (sUserName != null && sPasswd != null) {
+
 				X509TrustManager a = new X509TrustManager() {
 					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 						return null;
@@ -155,7 +198,8 @@ public class GitUtil {
 			return false;
 		}
 	}
-
+	
+	
 	/**
 	 * get default checkout repository
 	 * 
@@ -247,6 +291,32 @@ public class GitUtil {
 		try {
 
 			if (sUserName != null && sPasswd != null) {
+
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
+
+				Git.lsRemoteRepository().setRemote(sRemoteUrl).setCredentialsProvider(cp).call();
+			} else
+				Git.lsRemoteRepository().setRemote(sRemoteUrl).call();
+			return true;
+		} catch (GitAPIException e) {
+			 e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * 
+	 * @param sUserName
+	 * @param sPasswd
+	 * @return
+	 */
+	public boolean checkRemoteRepositoryIgnoreCertification(String sUserName, String sPasswd) {
+		if (sRemoteUrl == null)
+			return false;
+
+		try {
+
+			if (sUserName != null && sPasswd != null) {
 				X509TrustManager a = new X509TrustManager() {
 					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 						return null;
@@ -285,7 +355,8 @@ public class GitUtil {
 			return false;
 		}
 	}
-
+	
+	
 	/**
 	 * get all local tag object.
 	 * 
@@ -388,9 +459,17 @@ public class GitUtil {
 	 * @return
 	 */
 	public boolean checkout(String sBranchName) throws Exception{
+		try {
 			git.branchDelete().setBranchNames(sBranchName).setForce(true).call();
+		}catch(CannotDeleteCurrentBranchException ee) {
+			ee.printStackTrace();
+		}
+		try {
 			git.checkout().setCreateBranch(true).setForce(true).setName(sBranchName)
 					.setStartPoint("origin/" + sBranchName).call();
+		}catch(RefAlreadyExistsException ee) {
+			ee.printStackTrace();
+		}
 			return true;
 	}
 
@@ -656,11 +735,11 @@ public class GitUtil {
 		 * String sRemoteUrl = ar[0]; String sLocalDirectory = ar[1]; String sUserName =
 		 * ar[2]; String sUserPassword = ar[3];
 		 */
-		String sRemoteUrl = "https://bitbucket.org/WilliamFromTW/test.git";
-		String sLocalDirectory = "/Users/william/git/test";
-		String sUserName = "WilliamFromTW";
-		String sUserPassword = "!Lois0023";
+		String sRemoteUrl = "https://github.com/WilliamFromTW/test.git";
+		String sLocalDirectory = "/tmp/test";
+		String sUserName = "william.fromtw@gmail.com";
 
+		String sUserPassword = "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";
 		try {
 			aGitUtil = new GitUtil(sRemoteUrl, sLocalDirectory);
 

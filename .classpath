@@ -10,7 +10,6 @@
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="lib/commons-net-3.5.jar"/>
 	<classpathentry kind="lib" path="lib/jsch-0.1.54.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.jgit-4.5.7.201904151645-r.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.22.jar"/>
 	<classpathentry kind="lib" path="lib/jasper_report/Arial Unicode.jar"/>
 	<classpathentry kind="lib" path="lib/jasper_report/commons-digester-2.1.jar"/>
@@ -48,5 +47,6 @@
 	<classpathentry kind="lib" path="lib/poi-scratchpad-5.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/xmlbeans-5.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/InMethodTools-2.04.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jgit-6.3.0.202209071007-r.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,5 +1,10 @@
 v3.2b2(not released yet)
 --
+1. GitUtil Bugs Fix - 2022/10/06
+2. org.eclipse.jgit-6.3.0.202209071007  packages  - 2022/10/06
+
+v3.2b2(not released yet)
+--
 1. new JasperDesignManager class to handle design xml file - 2022/04/10
 2. change test file directory from tmp to opt - 2022/04/12
 3. poi bump to 5.2.2 , xmlbean 5 , log4j 2.1.7 - 2022/04/19

@@ -1,5 +1,5 @@
 ## How To Compile
-1. j2se version 8 or above    
+1. java version 11 or above    
 2. InMethod Tools 2.04 or above    
 3. include all jar files in directory lib/     
 4. gradle 5.6.2 or above    
@@ -22,7 +22,7 @@
 ## lib for Git utility
    slf4j-api-1.7.22.jar    
    jsch-0.1.54.jar    
-   org.eclipse.jgit-4.5.7.201904151645-r
+  org.eclipse.jgit-6.3.0.202209071007-r
         
 ## lib for itext (digital sinature) pdf utility
    jar file in directory "itext"    
