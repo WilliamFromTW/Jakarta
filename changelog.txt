@@ -2,6 +2,7 @@ v3.2b2(not released yet)
 --
 1. GitUtil Bugs Fix - 2022/10/06
 2. org.eclipse.jgit-6.3.0.202209071007  packages  - 2022/10/06
+3. GitUtil add clone shallow (depth) - 2022/10/07
 
 v3.2b2(not released yet)
 --

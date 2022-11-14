@@ -137,6 +137,47 @@ public class GitUtil {
 			e.printStackTrace();
 			return false;
 		}
+	}	
+	
+	/**
+	 * clone from remote repository to local repository
+	 * 
+	 * @param sUserName
+	 * @param sPasswd
+	 * @return
+	 */
+	public boolean clone(String sUserName, String sPasswd,int Depth) {
+
+		try {
+			if (sUserName != null && sPasswd != null) {
+
+				// Install the all-trusting trust manager
+	
+					SSLContext sc = SSLContext.getInstance("SSL");
+
+					sc.init(null, null, new java.security.SecureRandom());
+					
+					HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+	
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
+
+				Git.cloneRepository().setURI(sRemoteUrl).setDirectory(new File(sLocalDirectory))
+						.setCredentialsProvider(cp).setCloneAllBranches(true).setDepth(Depth).call();
+			} else {
+				Git.cloneRepository().setURI(sRemoteUrl).setDirectory(new File(sLocalDirectory))
+						.setCloneAllBranches(true).call();
+
+			}
+			if (git == null) {
+				aLocalGitFile = new File(sLocalDirectory + "/.git");
+				git = Git.open(aLocalGitFile);
+
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	/**
