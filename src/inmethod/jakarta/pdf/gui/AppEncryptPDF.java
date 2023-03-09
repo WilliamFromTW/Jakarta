@@ -15,6 +15,7 @@ import javax.swing.SwingWorker;
 
 import inmethod.commons.util.AppDataConfig;
 import inmethod.commons.util.SystemConfig;
+import inmethod.jakarta.Version;
 import inmethod.jakarta.pdf.EncryptPDF;
 
 import javax.swing.JTextField;
@@ -240,7 +241,7 @@ public class AppEncryptPDF {
 		btnNewButton.setBounds(216, 263, 104, 23);
 		frame.getContentPane().add(btnNewButton);
 		
-		JLabel lblsnapshot = new JLabel("3.1-SNAPSHOT 2017/12/06");
+		JLabel lblsnapshot = new JLabel(Version.Info);
 		lblsnapshot.setBounds(379, 298, 167, 13);
 		frame.getContentPane().add(lblsnapshot);
 	}

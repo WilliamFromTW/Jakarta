@@ -1,3 +1,7 @@
+v3.3(released)
+--
+add Version.java - 2023/03/09
+
 v3.2b2(not released yet)
 --
 1. GitUtil Bugs Fix - 2022/10/06
