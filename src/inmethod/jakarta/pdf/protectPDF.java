@@ -19,21 +19,21 @@ import com.itextpdf.kernel.pdf.WriterProperties;
  * @author william
  *
  */
-public class EncryptPDF {
+public class protectPDF {
 
-	private static EncryptPDF aEncryptPDF = null;
+	private static protectPDF aEncryptPDF = null;
 
 
 	/**
 	 * 不給用
 	 */
-	private EncryptPDF() {
+	private protectPDF() {
 	}
 
-	public static EncryptPDF getInstance() {
+	public static protectPDF getInstance() {
 		if (aEncryptPDF == null)
-			aEncryptPDF = new EncryptPDF();
-		return new EncryptPDF();
+			aEncryptPDF = new protectPDF();
+		return new protectPDF();
 
 	}
 	
@@ -51,7 +51,7 @@ public class EncryptPDF {
 			System.out.println("arg number is wrong\nExample:\nEncryptPDF source dest user_pass owner_pass\n");
 		}	
 		
- 	    EncryptPDF aConvert = EncryptPDF.getInstance();
+ 	    protectPDF aConvert = protectPDF.getInstance();
  	    if( args.length==2)
 		  aConvert.encryptFile(args[0], args[1],null,null);
  	    else if(args.length==4) {

@@ -1,5 +1,5 @@
 package inmethod.jakarta;
 
 public class Version {
-	public static final String Info = "Inmethod PDF Encrypt v3.3";
+	public static final String ProtectPDFInfo = "Inmethod Protect PDF v3.3p1";
 }

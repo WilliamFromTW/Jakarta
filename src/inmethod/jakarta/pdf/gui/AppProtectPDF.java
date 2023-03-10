@@ -16,7 +16,7 @@ import javax.swing.SwingWorker;
 import inmethod.commons.util.AppDataConfig;
 import inmethod.commons.util.SystemConfig;
 import inmethod.jakarta.Version;
-import inmethod.jakarta.pdf.EncryptPDF;
+import inmethod.jakarta.pdf.protectPDF;
 
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class AppEncryptPDF {
+public class AppProtectPDF {
 
 	private JFrame frame;
 	private JTextField txtSource;
@@ -50,7 +50,7 @@ public class AppEncryptPDF {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AppEncryptPDF window = new AppEncryptPDF();
+					AppProtectPDF window = new AppProtectPDF();
 					window.frame.setVisible(true);
 					
 				} catch (Exception e) {
@@ -64,19 +64,19 @@ public class AppEncryptPDF {
 	/**
 	 * Create the application.
 	 */
-	public AppEncryptPDF() {
+	public AppProtectPDF() {
 		initialize();
 	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		aSystemConfig = new SystemConfig("inmethod.jakarta.pdf.gui.AppEncryptPDF");
+		aSystemConfig = new SystemConfig("inmethod.jakarta.pdf.gui.AppProtectPDF");
 		aAppDataConfig = new AppDataConfig("JakartaPDFConfig");
 		if( aAppDataConfig.getKeyValue("source")==null)
-		  aAppDataConfig.setKeyValue("source",".\\source");
+		  aAppDataConfig.setKeyValue("source","");
 		if( aAppDataConfig.getKeyValue("dest")==null)
-		  aAppDataConfig.setKeyValue("dest",".\\dest");
+		  aAppDataConfig.setKeyValue("dest","");
 		
 		frame = new JFrame();
 		frame.setResizable(false);
@@ -180,11 +180,12 @@ public class AppEncryptPDF {
 				if (txtSource.getText().trim().equals("") || txtDest.getText().trim().equals("")) {
 					JOptionPane.showMessageDialog(null, aSystemConfig.getValue("choose_source_or_dest_dir"));
 					bSuccess = false;
-				}
-				System.out.println();
-				if (passwordOwner.getPassword().length == 0) {
-					JOptionPane.showMessageDialog(null, aSystemConfig.getValue("input_security_password"));
+				}else if(txtSource.getText().trim().equals(txtDest.getText().trim()) ){
+					JOptionPane.showMessageDialog(null, aSystemConfig.getValue("source_dest_cant_not_the_same"));					
 					bSuccess = false;
+				}else  if (passwordOwner.getPassword().length == 0) {
+					  JOptionPane.showMessageDialog(null, aSystemConfig.getValue("input_security_password"));
+				  	  bSuccess = false;				 
 				}
 				if (bSuccess) {
 					
@@ -207,10 +208,10 @@ public class AppEncryptPDF {
 								aAppDataConfig.setKeyValue("dest", txtDest.getText());
 								
 								if (passwordUser.getPassword().length == 0)
-									bSuccess = EncryptPDF.getInstance().encryptFile(txtSource.getText(), txtDest.getText(), null,
+									bSuccess = protectPDF.getInstance().encryptFile(txtSource.getText(), txtDest.getText(), null,
 											toBytes(passwordOwner.getPassword()));
 								else
-									bSuccess = EncryptPDF.getInstance().encryptFile(txtSource.getText(), txtDest.getText(),
+									bSuccess = protectPDF.getInstance().encryptFile(txtSource.getText(), txtDest.getText(),
 											toBytes(passwordUser.getPassword()), toBytes(passwordOwner.getPassword()));
 								if (bSuccess)
 									JOptionPane.showMessageDialog(null,  aSystemConfig.getValue("pdf_convert_success"));
@@ -241,7 +242,7 @@ public class AppEncryptPDF {
 		btnNewButton.setBounds(216, 263, 104, 23);
 		frame.getContentPane().add(btnNewButton);
 		
-		JLabel lblsnapshot = new JLabel(Version.Info);
+		JLabel lblsnapshot = new JLabel(Version.ProtectPDFInfo);
 		lblsnapshot.setBounds(379, 298, 167, 13);
 		frame.getContentPane().add(lblsnapshot);
 	}
