@@ -911,13 +911,12 @@ public class GitUtil {
 	 * @param FileTypeFilter  pdf
 	 * @return
 	 */
-	public  List<java.io.File> getRemoteFileListByTagAndFileTypeFilter(String FileTypeFilter) {
+	public  List<java.io.File> getRemoteFileListByTagAndFileTypeFilter(Ref ref,String FileTypeFilter) {
 		java.util.List<java.io.File> aFiles = new ArrayList<>();
 		try {
 			
 		    Repository repository = git.getRepository();
 		    List<Ref> call = new Git(repository).tagList().call();
-		    for (Ref ref : call) {
 		        System.out.println("Tag: " +  ref.getName() + "  Commit ID: " + ref.getObjectId().getName());
 		        try (RevWalk revWalk = new RevWalk(repository)) {
 		            RevCommit commit = revWalk.parseCommit(ref.getObjectId());
@@ -933,7 +932,6 @@ public class GitUtil {
 		            	  }
 		            	}
 		        }
-		    }
 		}catch(Exception ee) {
 			ee.printStackTrace();
 		}
@@ -941,28 +939,26 @@ public class GitUtil {
 
 	}
 	
-	public  List<java.io.File> getRemoteFileListByTagAndPathFilter(String sPathFilter) {
+	public  List<java.io.File> getRemoteFileListByTagAndPathFilter(Ref ref,String sPathFilter) {
 		java.util.List<java.io.File> aFiles = new ArrayList<>();
 		try {
 			
 		    Repository repository = git.getRepository();
 		    List<Ref> call = new Git(repository).tagList().call();
-		    for (Ref ref : call) {
-		        System.out.println("Tag: " +  ref.getName() + "  Commit ID: " + ref.getObjectId().getName());
-		        try (RevWalk revWalk = new RevWalk(repository)) {
-		            RevCommit commit = revWalk.parseCommit(ref.getObjectId());
+	        System.out.println("Tag: " +  ref.getName() + "  Commit ID: " + ref.getObjectId().getName());
+	        try (RevWalk revWalk = new RevWalk(repository)) {
+	            RevCommit commit = revWalk.parseCommit(ref.getObjectId());
 		            
-		            try (TreeWalk treeWalk = new TreeWalk(repository)) {
-		            	  treeWalk.reset(commit.getTree());
-		            	  treeWalk.setRecursive(true);
+	            try (TreeWalk treeWalk = new TreeWalk(repository)) {
+	            	  treeWalk.reset(commit.getTree());
+	            	  treeWalk.setRecursive(true);
 		            	  
-		            	  treeWalk.setFilter(PathFilter.create("ARTIFACTS"));
-		            	  while (treeWalk.next()) {
-		            		  System.out.println(treeWalk. getPathString());
-		            		  aFiles.add(new File(treeWalk. getPathString()));
-		            	  }
-		            	}
-		        }
+	            	  treeWalk.setFilter(PathFilter.create(sPathFilter));
+	            	  while (treeWalk.next()) {
+	            		  System.out.println(treeWalk. getPathString());
+	            		  aFiles.add(new File(treeWalk. getPathString()));
+	            	  }
+	            }
 		    }
 		}catch(Exception ee) {
 			ee.printStackTrace();
@@ -978,11 +974,11 @@ public class GitUtil {
 		 * String sRemoteUrl = ar[0]; String sLocalDirectory = ar[1]; String sUserName =
 		 * ar[2]; String sUserPassword = ar[3];
 		 */
-		String sRemoteUrl = "http://xxx:13000/mechanism/mech_final_parts.git";
+		String sRemoteUrl = "http://gitea.test.com:13000/mechanism/mech_final_parts.git";
 		String sLocalDirectory = "/tmp/test_mech_final_parts";
 		String sUserName = "mech";
 
-		String sUserPassword = "xxx";
+		String sUserPassword = "asdf";
 		try {
 			Collection<Ref>  aTL = GitUtil.getRemoteTagListIgnoreCertification(sRemoteUrl,sUserName,sUserPassword);
 			for (Ref aTag : aTL) {
@@ -1001,7 +997,7 @@ public class GitUtil {
 	
 			if (aGitUtil.checkRemoteRepository(sUserName, sUserPassword) && !aGitUtil.checkLocalRepository()) {
 				System.out.println("try to clone remote repository if local repository is not exists \n");
-				if (aGitUtil.clone(sUserName, sUserPassword))
+				if (aGitUtil.clone(sUserName, sUserPassword,true))
 					System.out.println("clone finished!");
 				else
 					System.out.println("clone failed!");
@@ -1027,6 +1023,9 @@ public class GitUtil {
 				if (aAllTags != null) {
 					System.out.println("\nList All Local Tags Name\n--------------------------------");
 					for (Ref aTag : aAllTags) {
+						aGitUtil.getRemoteFileListByTagAndPathFilter(aTag,"ARTIFACTS");
+						aGitUtil.getRemoteFileListByTagAndFileTypeFilter(aTag,"pdf");
+
 						System.out.println("Tag : " + aTag.getName() + "("
 								+ aGitUtil.getTagDate(aTag, "yyyy-MM-dd HH:mm:ss") + " created!)");
 						System.out.println("Commit messages\n==\n" + aGitUtil.getCommitMessageByTagName(aTag) + "\n");
@@ -1035,7 +1034,6 @@ public class GitUtil {
 				}
 				aGitUtil.close();
 			}
-aGitUtil.getRemoteFileListByTagAndFileTypeFilter("pdf");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
