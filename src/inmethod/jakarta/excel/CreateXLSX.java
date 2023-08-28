@@ -1198,9 +1198,8 @@ public class CreateXLSX implements ICreateExcel {
 		try {
 			XSSFClientAnchor anchor;
 			anchor = new XSSFClientAnchor(0, 0, 0, 0, (short) x1, y1, (short) x2, y2);
-			anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
-			// SXSSFPicture picture = patriarch.createPicture(anchor, loadPicture( aIS,
-			// getCurrentWorkBook()));
+			anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_AND_RESIZE);
+			 SXSSFPicture picture = patriarch.createPicture(anchor, loadPicture( aIS,		 getCurrentWorkBook()));
 			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();
