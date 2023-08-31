@@ -21,6 +21,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.ListTagCommand;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
@@ -58,7 +59,8 @@ public class GitUtil {
 	private String sLocalDirectory;
 	private File aLocalGitFile = null;
 	private String sRemoteDefaultBranch = "master";
-
+    private PullResult aPR;
+    
 	private GitUtil() {
 	}
 
@@ -71,6 +73,13 @@ public class GitUtil {
 			git.close();
 	}
 
+	/**
+	 * get pullResult after call pull method
+	 * @return
+	 */
+	public PullResult getPullResult() {
+		return aPR;
+	}
 	public GitUtil(String sRemoteUrl, String sLocalDirectory) throws Exception {
 		this.sRemoteUrl = sRemoteUrl;
 		this.sLocalDirectory = sLocalDirectory;
@@ -548,6 +557,7 @@ public class GitUtil {
 	public boolean checkout(String sBranchName) throws Exception{
 		try {
 			git.branchDelete().setBranchNames(sBranchName).setForce(true).call();
+			setRemoteDefaultBranch(sBranchName);
 		}catch(CannotDeleteCurrentBranchException ee) {
 			ee.printStackTrace();
 		}
@@ -746,6 +756,7 @@ public class GitUtil {
 	 */
 	public boolean pull(String sBranch, String sUserName, String sPasswd) {
 		try {
+			
 			if (sUserName != null && sPasswd != null) {
 
 				try {
@@ -753,13 +764,14 @@ public class GitUtil {
 					sc.init(null, null, new java.security.SecureRandom());
 					HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 				} catch (GeneralSecurityException e) {
-					// e.printStackTrace();
+					e.printStackTrace();
 				}
 
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
-				git.pull().setCredentialsProvider(cp).setRemoteBranchName(sBranch).call();
+				aPR = git.pull().setCredentialsProvider(cp).setRemoteBranchName(sBranch).call();
+		
 			} else
-				git.pull().setRemoteBranchName(sBranch).call();
+				aPR = git.pull().setRemoteBranchName(sBranch).call();
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
