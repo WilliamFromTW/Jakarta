@@ -96,6 +96,7 @@ public class ReadXLS implements IReadExcel{
         System.out.println("Last Cell Number = " + shortNumOfCell);
         for(short k=0;k<shortNumOfCell;k++){
           if( aRow.getCell(k)!= null){
+        	  try {
         	System.out.println("Data from Cell(" + k + ") = " + aRow.getCell(k).toString() );
             if(aRow.getCell(k).getCellType()==CellType.NUMERIC){
               NumberFormat formatter = new DecimalFormat("##0.#");
@@ -109,6 +110,10 @@ public class ReadXLS implements IReadExcel{
             }
             else
               aDataCell.add(aRow.getCell(k).getRichStringCellValue().toString() );
+          }catch(Exception ee) {
+        	ee.printStackTrace();
+            aDataCell.add("");
+        }
           }else{
             aDataCell.add("");
           }

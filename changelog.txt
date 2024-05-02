@@ -2,7 +2,7 @@ v3.4b1-SNAPSHOT
 --
 GitUtil add clone bare repository and get File list by TagName - 2023/08/24~25
 GitUtil pull print message, checkout will update default branch name - 2023/08/31
-
+fix bug for ReadXLSX、ReadXLS read string failed( Cannot get a STRING value from a ERROR formula cell ) - 2024/4/22
 
 v3.3p1(released)
 --
