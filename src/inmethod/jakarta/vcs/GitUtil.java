@@ -37,6 +37,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.merge.ContentMergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -60,12 +61,26 @@ public class GitUtil {
 	private File aLocalGitFile = null;
 	private String sRemoteDefaultBranch = "master";
     private PullResult aPR;
+    private ContentMergeStrategy aContentMergeStrategy = null;
     
 	private GitUtil() {
 	}
 
 	public Git getGit() {
 		return git;
+	}
+	
+	public void setContentMergeStrategyOURS() {
+		aContentMergeStrategy = ContentMergeStrategy.OURS;
+	}
+	
+	public void setContentMergeStrategyTHEIRS() {
+		aContentMergeStrategy = ContentMergeStrategy.THEIRS;		
+	}
+	
+	public void setContentMergeStrategyCONFLICT() {
+		aContentMergeStrategy = ContentMergeStrategy.CONFLICT;		
+		
 	}
 
 	public void close() {
@@ -768,7 +783,10 @@ public class GitUtil {
 				}
 
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(sUserName, sPasswd);
-				aPR = git.pull().setCredentialsProvider(cp).setRemoteBranchName(sBranch).call();
+				if( aContentMergeStrategy!=null)
+				  aPR = git.pull().setCredentialsProvider(cp).setContentMergeStrategy(aContentMergeStrategy) .setRemoteBranchName(sBranch).call();
+				else
+				  aPR = git.pull().setCredentialsProvider(cp).setRemoteBranchName(sBranch).call();
 		
 			} else
 				aPR = git.pull().setRemoteBranchName(sBranch).call();
@@ -986,11 +1004,11 @@ public class GitUtil {
 		 * String sRemoteUrl = ar[0]; String sLocalDirectory = ar[1]; String sUserName =
 		 * ar[2]; String sUserPassword = ar[3];
 		 */
-		String sRemoteUrl = "http://gitea.test.com:13000/mechanism/mech_final_parts.git";
-		String sLocalDirectory = "/tmp/test_mech_final_parts";
-		String sUserName = "mech";
+		String sRemoteUrl = "https://gitblit.hlmt.com.tw/r/rd2/test.git";
+		String sLocalDirectory = "/tmp/test";
+		String sUserName = "920405";
 
-		String sUserPassword = "asdf";
+		String sUserPassword = "!lois0023";
 		try {
 			Collection<Ref>  aTL = GitUtil.getRemoteTagListIgnoreCertification(sRemoteUrl,sUserName,sUserPassword);
 			for (Ref aTag : aTL) {
@@ -1030,7 +1048,7 @@ public class GitUtil {
 					}
 					System.out.println("");
 				}
-				System.out.println("Switch local branch master = " + aGitUtil.checkout("main"));
+				System.out.println("Switch local branch master = " + aGitUtil.checkout("master"));
 				List<Ref> aAllTags = aGitUtil.getLocalTags();
 				if (aAllTags != null) {
 					System.out.println("\nList All Local Tags Name\n--------------------------------");
