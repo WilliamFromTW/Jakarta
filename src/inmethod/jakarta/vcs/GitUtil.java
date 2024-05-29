@@ -22,6 +22,7 @@ import org.eclipse.jgit.api.ListBranchCommand.ListMode;
 import org.eclipse.jgit.api.ListTagCommand;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.CannotDeleteCurrentBranchException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
@@ -738,7 +739,7 @@ public class GitUtil {
 	 * 
 	 * @return
 	 */
-	public boolean pull() {
+	public boolean pull() throws Exception{
 		return pull(null, null);
 	}
 
@@ -757,7 +758,7 @@ public class GitUtil {
 	 * @param sPasswd
 	 * @return
 	 */
-	public boolean pull(String sUserName, String sPasswd) {
+	public boolean pull(String sUserName, String sPasswd) throws Exception{
 		return pull(getRemoteDefaultBranch(), sUserName, sPasswd);
 	}
 
@@ -769,8 +770,7 @@ public class GitUtil {
 	 * @param sPasswd
 	 * @return
 	 */
-	public boolean pull(String sBranch, String sUserName, String sPasswd) {
-		try {
+	public boolean pull(String sBranch, String sUserName, String sPasswd)  throws Exception{
 			
 			if (sUserName != null && sPasswd != null) {
 
@@ -791,10 +791,6 @@ public class GitUtil {
 			} else
 				aPR = git.pull().setRemoteBranchName(sBranch).call();
 			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
 	}
 
 	/**
@@ -805,8 +801,7 @@ public class GitUtil {
 	 * @param sPasswd
 	 * @return
 	 */
-	public boolean pullIgnoreCertification(String sBranch, String sUserName, String sPasswd) {
-		try {
+	public boolean pullIgnoreCertification(String sBranch, String sUserName, String sPasswd)  throws Exception{
 			if (sUserName != null && sPasswd != null) {
 				X509TrustManager a = new X509TrustManager() {
 					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
@@ -840,10 +835,6 @@ public class GitUtil {
 			} else
 				git.pull().setRemoteBranchName(sBranch).call();
 			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
 	}
 	
 	
@@ -1353,6 +1344,32 @@ public class GitUtil {
 						System.out.println("File names: " + tw.getPathString());
 				}
 			}
+		}
+	}
+
+	/**
+	 * ResetType.HARD、ResetType.MIXED
+	 * @param aResetType
+	 */
+	public void reset(ResetType aResetType) {
+		try {
+			git.reset().setMode(aResetType).call();
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param aResetType  ResetType.HARD、ResetType.MIXED
+	 * @param sBranchName  master
+	 */
+	public void reset(ResetType aResetType,String sBranchName) {
+		try {
+			git.reset().setMode(aResetType).setRef("refs/remotes/origin/"+sBranchName).call();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
 		}
 	}
 
