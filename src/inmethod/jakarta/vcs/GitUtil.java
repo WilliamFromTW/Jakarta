@@ -487,16 +487,11 @@ public class GitUtil {
 	 * @param aRefTag
 	 * @return
 	 */
-	public String getCommitMessageByTagName(Ref aRefTag) {
-		try {
+	public String getCommitMessageByTagName(Ref aRefTag) throws Exception {
 			RevWalk walk = new RevWalk(git.getRepository());
 			String sMessage = walk.parseCommit(((Ref) aRefTag).getObjectId()).getFullMessage();
 			walk.close();
 			return sMessage;
-		} catch (Exception e) {
-			// e.printStackTrace();
-			return null;
-		}
 	}
 
 	/**
@@ -594,16 +589,11 @@ public class GitUtil {
 	 * @param sMessage
 	 * @return
 	 */
-	public boolean commit(String sMessage) {
-		try {
+	public boolean commit(String sMessage)  throws Exception{
 			git.add().setUpdate(true).addFilepattern(".").call();
 			git.add().addFilepattern(".").call();
 			git.commit().setMessage(sMessage).call();
 			return true;
-		} catch (Exception ee) {
-			ee.printStackTrace();
-		}
-		return false;
 	}
 
 	/**
@@ -613,16 +603,11 @@ public class GitUtil {
 	 * @param sAuthorEmail
 	 * @return
 	 */
-	public boolean commit(String sMessage, String sAuthorName, String sAuthorEmail) {
-		try {
+	public boolean commit(String sMessage, String sAuthorName, String sAuthorEmail)  throws Exception{
 			git.add().setUpdate(true).addFilepattern(".").call();
 			git.add().addFilepattern(".").call();
 			git.commit().setAuthor(sAuthorName, sAuthorEmail).setMessage(sMessage).call();
 			return true;
-		} catch (Exception ee) {
-			ee.printStackTrace();
-		}
-		return false;
 	}
 
 	public boolean push(String sUserName, String sPasswd) {
@@ -1363,11 +1348,11 @@ public class GitUtil {
 	/**
 	 * 
 	 * @param aResetType  ResetType.HARD、ResetType.MIXED
-	 * @param sBranchName  master
+	 * @param sBranchName  HEAD，master、origin/master
 	 */
 	public void reset(ResetType aResetType,String sBranchName) {
 		try {
-			git.reset().setMode(aResetType).setRef("refs/remotes/origin/"+sBranchName).call();
+			git.reset().setMode(aResetType).setRef(sBranchName).call();
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}

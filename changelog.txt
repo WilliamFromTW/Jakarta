@@ -3,10 +3,11 @@ v3.4b2-SNAPSHOT
 GitUtil add clone bare repository and get File list by TagName - 2023/08/24~25
 GitUtil pull print message, checkout will update default branch name - 2023/08/31
 fix bug for ReadXLSX、ReadXLS read string failed( Cannot get a STRING value from a ERROR formula cell ) - 2024/4/22
-GitUtil - 2024/05/29
-1. pull command with  setContentMergeStrategy(ContentMergeStrategy.OURS) and throws exception  
-2. new method (pull and merge strategy) , setContentMergeStrategyOURS, setContentMergeStrategyTHEIRS,setContentMergeStrategyCONFLICT
-3. reset method
+GitUtil 
+1. pull command with  setContentMergeStrategy(ContentMergeStrategy.OURS) and throws exception - 2024/05/29  
+2. new method (pull and merge strategy) , setContentMergeStrategyOURS, setContentMergeStrategyTHEIRS,setContentMergeStrategyCONFLICT- 2024/05/29
+3. reset method- 2024/05/29
+4.commit throws exception - 2024/05/30
 
 v3.3p1(released)
 --
