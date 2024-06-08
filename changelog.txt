@@ -7,7 +7,8 @@ GitUtil
 1. pull command with  setContentMergeStrategy(ContentMergeStrategy.OURS) and throws exception - 2024/05/29  
 2. new method (pull and merge strategy) , setContentMergeStrategyOURS, setContentMergeStrategyTHEIRS,setContentMergeStrategyCONFLICT- 2024/05/29
 3. reset method- 2024/05/29
-4.commit throws exception - 2024/05/30
+4. commit throws exception - 2024/05/30
+5. new method getLocalCommitIdListByFilePath - 2024/06/08
 
 v3.3p1(released)
 --

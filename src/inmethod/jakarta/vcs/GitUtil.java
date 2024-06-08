@@ -974,17 +974,17 @@ public class GitUtil {
 	
 	//public TreeWalk getTreeWalkByTagName
 	
-	public static void main(String ar[]) {
+	public static void main2(String ar[]) {
 		GitUtil aGitUtil;
 		/*
 		 * String sRemoteUrl = ar[0]; String sLocalDirectory = ar[1]; String sUserName =
 		 * ar[2]; String sUserPassword = ar[3];
 		 */
-		String sRemoteUrl = "https://gitblit.hlmt.com.tw/r/rd2/test.git";
+		String sRemoteUrl = "https://gitblit.test.com.tw/r/rd2/test.git";
 		String sLocalDirectory = "/tmp/test";
 		String sUserName = "920405";
 
-		String sUserPassword = "!lois0023";
+		String sUserPassword = "xxxxx";
 		try {
 			Collection<Ref>  aTL = GitUtil.getRemoteTagListIgnoreCertification(sRemoteUrl,sUserName,sUserPassword);
 			for (Ref aTag : aTL) {
@@ -1052,23 +1052,26 @@ public class GitUtil {
 	 * 
 	 * @param ar
 	 */
-	public static void main2(String ar[]) {
+	public static void main(String ar[]) {
 		try {
-			GitUtil aGitUtil = new GitUtil(null, "/Users/william/git/inmethodgitnotetaking");
+			GitUtil aGitUtil = new GitUtil(null, "C:\\Users\\lois\\Documents\\GitHub\\GitNoteTaking");
 			if (!aGitUtil.checkLocalRepository()) {
 				System.out.println("no local repository found!");
 				// aGitUtil.createLocalRepository();
 			} else {
 				System.out.println("local repository found!");
 //				aGitUtil.commitHistory();
-				List<RevCommit> aCommitList = aGitUtil.getLocalCommitIdList();
+				List<RevCommit> aCommitList = aGitUtil.getLocalCommitIdListByFilePath("app/build.gradle");
 
 				if (aCommitList.size() >= 2) {
 					String sCurrentCommitID = aCommitList.get(0).getName();
 					String sPreviousCommitID = aCommitList.get(1).getName();
 
-					System.out.println("######\nCommit ID=" + aCommitList.get(0).getName() + ",date="
-							+ aCommitList.get(0).getCommitTime());
+					
+					for( RevCommit aRevCommit: aCommitList) {
+						System.out.println("RevCommit message="+aRevCommit.getFullMessage());
+					}
+					
 					List<String> aFileList = aGitUtil.getCommitFileList(aCommitList.get(0));
 					for (String sFilePath : aFileList) {
 						System.out.println(sFilePath);
@@ -1172,6 +1175,31 @@ public class GitUtil {
 		}
 	}
 
+	/**
+	 * get all local commit log
+	 * @param show file commit history(example: "app/build.gradle"
+	 * @return
+	 */
+	public ArrayList<RevCommit> getLocalCommitIdListByFilePath(String sFilePath) {
+		ArrayList<RevCommit> aList = new ArrayList<RevCommit>();
+		try {
+			Iterable<RevCommit> logs = git.log().addPath(sFilePath).call();
+
+			for (RevCommit commit : logs) {
+				String commitID = commit.getName();
+				// System.out.println("################" + commit.getCommitTime() + "," +
+				// commit.getFullMessage());
+				if (commitID != null && !commitID.isEmpty()) {
+					aList.add(commit);
+				}
+			}
+		} catch (Exception ee) {
+
+		}
+		return aList;
+	}
+
+	
 	/**
 	 * get all local commit log
 	 * 

@@ -1,5 +1,5 @@
 ## How To Compile
-1. java version 11 or above    
+1. java version 11     
 2. InMethod Tools 2.04 or above    
 3. include all jar files in directory lib/     
 4. gradle 5.6.2 or above    
