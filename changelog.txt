@@ -9,6 +9,7 @@ GitUtil
 3. reset method- 2024/05/29
 4. commit throws exception - 2024/05/30
 5. new method getLocalCommitIdListByFilePath - 2024/06/08
+6. new lib(org.eclipse.jgit.archive-6.6.1) & new backup method - 2024/06/09
 
 v3.3p1(released)
 --

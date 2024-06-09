@@ -48,5 +48,6 @@
 	<classpathentry kind="lib" path="lib/InMethodTools-2.04.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-6.6.1.202309021850-r.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-2.0.13.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jgit.archive-6.6.1.202309021850-r.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
