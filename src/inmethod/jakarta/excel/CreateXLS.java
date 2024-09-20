@@ -1,9 +1,13 @@
 package inmethod.jakarta.excel;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.hssf.usermodel.*;
 import java.io.*;
 import java.util.*;
@@ -19,14 +23,18 @@ public class CreateXLS implements ICreateExcel {
   private HSSFSheet sheet;
   private java.io.OutputStream aOutput;
   private java.io.InputStream aInput;
-  private int iNextRow;
-
+//  private int iNextRow;
+  HashMap<String, Integer> objNextRow = new HashMap<String, Integer>();
   private boolean bolPrintResultSetHeader;
+  private boolean bolAutoSizeColumn = false;
   private HSSFRow headerRow = null;
   private HSSFCell headerCell = null;
   private HSSFPatriarch patriarch = null;
   private String sCurrencyFormat = "#,##0.0";
   private String sIntCurrencyFormat = "#,##0";
+  String sCheckString1 = "begin";
+
+  
   private CreateXLS(){}
 
   public CreateXLS(OutputStream aOS){
@@ -39,9 +47,30 @@ public class CreateXLS implements ICreateExcel {
     init();
   }
 
-
+	/**
+	 * set auto sizing column to fit data length( slow performance ). ps. if
+	 * setAutoSizeColumn(true) and setAutoWrapText(true) , auto size will not enable
+	 * 
+	 * @param bolTrueFalse
+	 */
+	public void setAutoSizeColumn(boolean bolTrueFalse) {
+		bolAutoSizeColumn = bolTrueFalse;
+	}
+	/**
+	 * get auto sizing column setting ps. if setAutoSizeColumn(true) and
+	 * setAutoWrapText(true) , auto size will not enable
+	 * 
+	 * @return
+	 */
+	public boolean getAutoSizeColumn() {
+		return bolAutoSizeColumn;
+	}
+	
   private synchronized int getNextRowID(){
-    return ++iNextRow;
+	  int iNextRow =  objNextRow.get(getCurrentSheet().getSheetName() );
+	  objNextRow.put(  getCurrentSheet().getSheetName(),iNextRow+1);
+	  return iNextRow+1;
+//    return ++iNextRow;
   }
 
   private void init(){
@@ -60,25 +89,45 @@ public class CreateXLS implements ICreateExcel {
     }
   }
 
-
+  
   /**
+   *  create a new sheet and set as current
+   */
+  public void createSheet() {
+	  
+  }
+  /**
+   * @deprecated use setCurrentSheet(String sSheetName) instead of setCurrentSheet();
    * create a new sheet and set as current
    */
   public void setCurrentSheet(){
-      sheet = getCurrentWorkBook().createSheet();
+	  String sSheetName = UUID.randomUUID().toString();
+      sheet = getCurrentWorkBook().createSheet(sSheetName);
       patriarch = sheet.createDrawingPatriarch();
+	  objNextRow.put  ( sSheetName,-1);
+ }
 
-      iNextRow = -1;
+  /*
+  public String[] getSheetName() {
+	  
   }
-
+  */
+  
   /**
    * set current sheet as specified name
    */
-  public void setCurrentSheet(String sName){
-    sheet = workBook.getSheet(sName);
+  public void setCurrentSheet(String sSheetName){
+    sheet = workBook.getSheet(sSheetName);
+//    System.out.println("setCurrentSheet sheet = "+sheet);
+    if( sheet==null) {
+    	sheet =  getCurrentWorkBook().createSheet(sSheetName );
+   	    objNextRow.put  ( sSheetName,-1);
+   	 //   System.out.println("setCurrentSheet sheet2 = "+sheet);
+    }else {
+ 	    objNextRow.put  ( sSheetName,-1);
+   	    //System.out.println("setCurrentSheet sheet2 = "+sheet);
+    }
     patriarch = sheet.createDrawingPatriarch();
-
-    iNextRow = -1;
   }
 
   /**
@@ -155,7 +204,6 @@ public class CreateXLS implements ICreateExcel {
    */
   public boolean calculateCsv(int checkCells,DataSet aDS,String sEncode){
     int iCheckCells = checkCells;
-    String sCheckString1 = "begin";
     String sCheckString2 = null;
     if(aDS == null ) return false;
     Vector aTempVector = null;
@@ -289,12 +337,109 @@ public class CreateXLS implements ICreateExcel {
    */
   public void buildExcel(){
     try{
+		if (getAutoSizeColumn()) {
+			int iNumberOfSheets = workBook.getNumberOfSheets();
+			HSSFSheet tmpSheet;
+			int[] iColRow;
+			int row, col;
+			// System.out.println("iNumberOfSheets"+iNumberOfSheets);
+			for (int iCurrentSheetNum = 0; iCurrentSheetNum < iNumberOfSheets; iCurrentSheetNum++) {
+				tmpSheet = workBook.getSheetAt(iCurrentSheetNum);
+				iColRow = maxExcelrowcol(tmpSheet);
+				System.out.println("MaxCol=" + iColRow[0] + ", MaxRow=" + iColRow[1]);
+				for (int iCurrentCol = 0; iCurrentCol <= iColRow[0]; iCurrentCol++) {
+					tmpSheet.autoSizeColumn(iCurrentCol);
+				     //System.out.println("iCurrentCol="+iCurrentCol);
+					int curColWidth = tmpSheet.getColumnWidth(iCurrentCol) / 256;
+					for (int rowNum = 0; rowNum <iColRow[1]; rowNum++) {
+						Row currentRow = tmpSheet.getRow(rowNum);
+					     //System.out.println("currentRow="+rowNum);
+						if (currentRow != null) {
+							Cell currentCell = currentRow.getCell(iCurrentCol);
+							// System.out.println("currentCell="+currentCell+",is in merged cells
+							// "+getIndexIfCellIsInMergedCells(tmpSheet, rowNum , iCurrentCol) );
+							if (currentCell != null && currentCell.getCellType() == CellType.STRING
+									&& !getIndexIfCellIsInMergedCells(tmpSheet, rowNum, iCurrentCol)) {
+								//System.out.println("cell="+currentCell);
+								int length = currentCell.getStringCellValue().getBytes("BIG5").length+1;
+								length = (int) Math.ceil(  (length*1.01));
+								//System.out.println("curColWidth="+curColWidth+", curCel = "+ length);
+								if (curColWidth < length) {
+									curColWidth = length;
+								}
+							}
+
+						}
+					}
+					tmpSheet.setColumnWidth(iCurrentCol, curColWidth * 256);
+
+				}
+
+			}
+
+		}
+
      workBook.write(aOutput);
     }catch(Exception ex){
       ex.printStackTrace();
     }
   }
+	/**
+	 * 
+	 * @param tmpSheet
+	 * @return int[0] col , int[1] row;
+	 */
+	private int[] maxExcelrowcol(HSSFSheet tmpSheet) {
 
+		int row, col;
+		int[] iReturn = new int[2];
+		iReturn[0] = 0;
+		iReturn[1] = 0;
+		// Row iterator
+		Iterator rowIter = sheet.rowIterator();
+
+		while (rowIter.hasNext()) {
+			HSSFRow myRow = (HSSFRow) rowIter.next();
+			// Cell iterator for iterating from cell to next cell of a row
+			Iterator cellIter = myRow.cellIterator();
+			while (cellIter.hasNext()) {
+				Cell myCell = (Cell) cellIter.next();
+
+				row = myCell.getRowIndex();
+				col = myCell.getColumnIndex();
+
+				if (iReturn[1] < row) {
+					iReturn[1] = row;
+				}
+
+				if (iReturn[0] < col) {
+					iReturn[0] = col;
+				}
+			}
+		}
+		return iReturn;
+
+	}
+	/**
+	 * Get the index of the merged cell in all the merged cells if the given cell is
+	 * in a merged cell. Otherwise, it will return null.
+	 *
+	 * @param sheet  The Sheet object
+	 * @param row    The row number of this cell
+	 * @param column The column number of this cell
+	 * @return The index of all merged cells, which will be useful for
+	 *         {@link Sheet#getMergedRegion(int)}
+	 */
+	private boolean getIndexIfCellIsInMergedCells(HSSFSheet sheet, int row, int column) {
+		int numberOfMergedRegions = sheet.getNumMergedRegions();
+
+		for (int i = 0; i < numberOfMergedRegions; i++) {
+			CellRangeAddress mergedCell = sheet.getMergedRegion(i);
+
+			return mergedCell.isInRange(row, column);
+		}
+		return false;
+	}
 
   /**
    * Get next row .
@@ -468,8 +613,7 @@ public class CreateXLS implements ICreateExcel {
    */
   public boolean calculateShiftExcel(int checkCells,int iShiftRow,DataSet aDS){
     int iCheckCells = checkCells;
-    String sCheckString1 = "begin";
-    String sCheckString2 = null;
+    String sCheckString2 = "";
 
     if(aDS == null ) return false;
     Vector aTempVector = null;
@@ -489,7 +633,8 @@ public class CreateXLS implements ICreateExcel {
         iOffSet++;
         aTempVector = (Vector) aDS.getData();
         
-        while(iShiftRow>getCurrentSheet().getLastRowNum() )  getCurrentSheet().createRow(iShiftRow);
+        while(iShiftRow>getCurrentSheet().getLastRowNum() ) 
+        	getCurrentSheet().createRow(iShiftRow);
         getCurrentSheet().shiftRows( iShiftRow, getCurrentSheet().getLastRowNum(),1,true,false);
         
         aTempRow = getCurrentSheet().getRow(iShiftRow);
@@ -516,6 +661,7 @@ public class CreateXLS implements ICreateExcel {
             if( sourceCell!=null){
               targetCell.setCellStyle(sourceCell.getCellStyle());
               targetCell.setCellType(sourceCell.getCellType());
+         
             }
 
           }
@@ -534,34 +680,43 @@ public class CreateXLS implements ICreateExcel {
           aTempCell = aTempRow.getCell(i);
 
           obj = aTempVector.get((int)i);
-          if( iCheckCells>0 )
+          
+          if( iCheckCells>0 ) {
+        	  
+//        	  System.out.println("sCheckString1="+sCheckString1+",sCheckString2="+sCheckString2);
+        	  
             if(sCheckString1.equals(sCheckString2))
               if( (i+1)<=iCheckCells ){
                 aTempCell.setCellValue( new HSSFRichTextString("") );
                 continue;
               }
-
+          }
+          /*
+          CurrencyCS.setBorderBottom(aTempCell.getCellStyle().getBorderBottom());
+          CurrencyCS.setBorderLeft(aTempCell.getCellStyle().getBorderLeft());
+          CurrencyCS.setBorderRight(aTempCell.getCellStyle().getBorderRight());
+          CurrencyCS.setBorderTop(aTempCell.getCellStyle().getBorderTop());
+          */
           if( obj instanceof Double ){
+              aTempCell.setCellType(CellType.NUMERIC);
             aTempCell.setCellStyle(CurrencyCS);
             aTempCell.setCellValue( ((Double)obj).doubleValue() );
-          }
-
-          if( obj instanceof Integer ){
+          }else   if( obj instanceof Integer ){
+              aTempCell.setCellType(CellType.NUMERIC);
             aTempCell.setCellStyle(CurrencyCS);
             aTempCell.setCellValue( ((Integer)obj).intValue() );
-          }
-
-
-          if( obj instanceof String ){
+          }else  if( obj instanceof String ){
             aTempCell.setCellValue( new HSSFRichTextString((String)obj) );
-          }
-          if( obj instanceof Short ){
+          }else    if( obj instanceof Short ){
             aTempCell.setCellType(CellType.NUMERIC);
             aTempCell.setCellStyle(CurrencyCS);
             aTempCell.setCellValue( ((Short)obj).shortValue() );
           }
         }
+  	//  System.out.println("@sCheckString1="+sCheckString1+",sCheckString2="+sCheckString2);
+
         sCheckString1 = sCheckString2;
+    	//  System.out.println("@@sCheckString1="+sCheckString1+",sCheckString2="+sCheckString2);
 
       }
       return true;
@@ -1015,4 +1170,7 @@ private  int loadPicture( InputStream aIS, HSSFWorkbook wb ) throws IOException
     return strObjectType;
   }
 
+  
+  
+  
 }
