@@ -83,6 +83,7 @@ public class CreateXLSX implements ICreateExcel {
 	}
 
 	private synchronized int getNextRowID() {
+		System.out.println( "asdf"+ getCurrentSheet().getSheetName() +",objNextRow="+objNextRow );
 		  int iNextRow =  objNextRow.get(getCurrentSheet().getSheetName() );
 		  objNextRow.put(  getCurrentSheet().getSheetName(),iNextRow+1);
 		  return iNextRow+1;
@@ -153,6 +154,9 @@ public class CreateXLSX implements ICreateExcel {
 	 */
 	public void setCurrentSheet() {
 		  String sSheetName = UUID.randomUUID().toString();
+		  //System.out.println("setCurrentSheet sSheetName = "+ sSheetName);
+		  if( sSheetName.length()> 30)
+			  sSheetName = sSheetName.substring(0,30);
 	      sheet = getCurrentWorkBook().createSheet(sSheetName);
 		 sheet.setRandomAccessWindowSize(-1);
 	      patriarch = sheet.createDrawingPatriarch();

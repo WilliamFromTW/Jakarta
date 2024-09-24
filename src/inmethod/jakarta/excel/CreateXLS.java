@@ -102,6 +102,8 @@ public class CreateXLS implements ICreateExcel {
    */
   public void setCurrentSheet(){
 	  String sSheetName = UUID.randomUUID().toString();
+	  if( sSheetName.length()> 30)
+		  sSheetName = sSheetName.substring(0,30);
       sheet = getCurrentWorkBook().createSheet(sSheetName);
       patriarch = sheet.createDrawingPatriarch();
 	  objNextRow.put  ( sSheetName,-1);

@@ -11,6 +11,7 @@ GitUtil
 5. new method getLocalCommitIdListByFilePath - 2024/06/08
 6. new lib(org.eclipse.jgit.archive-6.6.1) & new backup method - 2024/06/09
 7. fix bug in CreateXLS , and make shiftrows method deprecated in CreateXLSX - 20240916
+8. fix bug null point exception in CreateXLSX、CreateXLS - 20240924
 
 v3.3p1(released)
 --
