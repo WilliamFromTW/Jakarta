@@ -83,7 +83,7 @@ public class CreateXLSX implements ICreateExcel {
 	}
 
 	private synchronized int getNextRowID() {
-		System.out.println( "asdf"+ getCurrentSheet().getSheetName() +",objNextRow="+objNextRow );
+		//System.out.println( "asdf"+ getCurrentSheet().getSheetName() +",objNextRow="+objNextRow );
 		  int iNextRow =  objNextRow.get(getCurrentSheet().getSheetName() );
 		  objNextRow.put(  getCurrentSheet().getSheetName(),iNextRow+1);
 		  return iNextRow+1;
